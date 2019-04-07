@@ -1,0 +1,6 @@
+52.4801,-1.9035,Birmingham Museum
+52.4812,-1.8989,St Philip's Cathedral
+52.4829,-1.8943,Victoria Law Courts
+52.4816,-1.8973,Great Western Arcade
+52.4749,-1.9069,The Cube
+52.4797,-1.9085,Birmingham Library
