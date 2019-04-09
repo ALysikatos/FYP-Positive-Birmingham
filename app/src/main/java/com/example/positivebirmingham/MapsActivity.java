@@ -1,6 +1,8 @@
 package com.example.positivebirmingham;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
@@ -12,6 +14,11 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 
@@ -273,6 +280,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         new FetchURL(MapsActivity.this).execute(url, "walking");
                         destination = marker;
                        // Log.i("testing", distance);
+                        Intent intent = new Intent(MapsActivity.this, PopUpInfoWindow.class);
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString("MARKER", marker.toString());
+                        bundle.putSerializable("MARKER_TITLE", marker.getTitle());
+                     //   bundle.putSerializable("MARKER_ARRAY", markersList);
+                        intent.putExtras(bundle);
+
+
+                        Log.i("lol", marker.toString());
+                        startActivity(intent);
+
+//                        LayoutInflater inflater = (LayoutInflater) MapsActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//                        View layout = inflater.inflate(R.layout.popup,null);
+//                        PopupWindow pw = new PopupWindow(layout, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//                        pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
                         return false;
                     }
                 }
