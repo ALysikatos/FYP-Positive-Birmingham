@@ -97,13 +97,30 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
             // Drawing polyline in the Google Map for the i-th route
             if (lineOptions != null) {
                 //mMap.addPolyline(lineOptions);
-                taskCallback.onTaskDone(lineOptions,distance,duration);
+               // Log.i("lol", lineOptions + " + " + distance + " + " + duration);
+                //taskCallback.onTaskDone(lineOptions,distance,duration);
                 MapsActivity.getDirections(distance, duration);
 
 
                 if (MapsActivity.currentPolyline != null)
                     MapsActivity.currentPolyline.remove();
-                MapsActivity.currentPolyline = MapsActivity.mMap.addPolyline(lineOptions);                //taskCallback.onTaskDone(distance);
+                MapsActivity.currentPolyline = MapsActivity.mMap.addPolyline(lineOptions);
+
+                String theSnippet = "Distance: " + distance + ", " + duration + " walk";
+//                if (MapsActivity.destinationMarker != null)
+//                    MapsActivity.destinationMarker.remove();
+                MapsActivity.destinationMarker.setSnippet(theSnippet);
+                MapsActivity.destinationMarker.showInfoWindow();
+
+               // MapsActivity.currentPolyline.setSnippet(theSnippet);
+               // MapsActivity.currentPolyline.showInfoWindow();
+
+                Log.i("lolz", String.valueOf(MapsActivity.currentPolyline.getPoints().get(0)));
+                //Log.i("lolz", String.valueOf(MapsActivity.currentPolyline.getPoints().));
+
+
+
+                //taskCallback.onTaskDone(distance);
 
             } else {
                 Log.d("mylog", "without Polylines drawn");

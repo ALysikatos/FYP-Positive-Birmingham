@@ -64,6 +64,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private CameraPosition mCameraPosition;
 
     public static Polyline currentPolyline;
+    public static Marker destinationMarker;
     private String distance;
     private String duration;
     private Marker destination;
@@ -276,8 +277,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public boolean onMarkerClick(Marker marker) {
 
-                        String url = getUrl(currentPosition, marker.getPosition(), "walking");
-                        new FetchURL(MapsActivity.this).execute(url, "walking");
+                        //String url = getUrl(currentPosition, marker.getPosition(), "walking");
+                       // new FetchURL(MapsActivity.this).execute(url, "walking");
                         destination = marker;
                         Log.i("testing", String.valueOf(currentPosition));
                         Log.i("testing", String.valueOf(marker.getPosition()));
@@ -289,8 +290,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             bundle.putString("MARKER", marker.toString());
                             bundle.putSerializable("MARKER_TITLE", marker.getTitle());
                             bundle.putParcelable("MARKER_LATLNG", marker.getPosition());
+                            bundle.putParcelable("CURRENT_LATLNG", currentPosition);
                             bundle.putString("MARKER_PLACEID", marker.getTag().toString());
                             Log.i("testing", marker.getTag().toString());
+                            destinationMarker = marker;
 
 
                             //   bundle.putSerializable("MARKER_ARRAY", markersList);
@@ -437,9 +440,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public static void getDirections(String distance, String duration) {
         //Log.i("test", destination.getTitle());
-       Log.i("test", distance);
+        String theSnippet = "Distance: " + distance + ", " + duration + " walk";
+
+        // MapsActivity.currentPolyline.setSnippet(theSnippet);
+        // MapsActivity.currentPolyline.showInfoWindow();
+
+        Log.i("test", distance);
        Log.i("test", duration);
     }
+
 
     public void setDistanceDuration(Marker destination, String distance, String duration) {
         Log.i("markers", String.valueOf(destination));

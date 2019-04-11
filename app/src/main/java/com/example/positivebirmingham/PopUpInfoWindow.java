@@ -42,7 +42,7 @@ import java.util.Locale;
 
 import static com.android.volley.VolleyLog.TAG;
 
-public class PopUpInfoWindow extends Activity {
+public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
     LinearLayout linearLayout1;
 
     LinearLayout layoutOfPopup;
@@ -52,6 +52,7 @@ public class PopUpInfoWindow extends Activity {
     String markerClicked;
     String markerTitle;
     LatLng markerPosition;
+    LatLng currentPosition;
     String markerPlaceID;
 
     @Override
@@ -64,6 +65,7 @@ public class PopUpInfoWindow extends Activity {
         markerClicked = bundle.getString("MARKER");
         markerTitle = bundle.getString("MARKER_TITLE");
         markerPosition = bundle.getParcelable("MARKER_LATLNG");
+        currentPosition = bundle.getParcelable("CURRENT_LATLNG");
         markerPlaceID = bundle.getString("MARKER_PLACEID");
         Log.i("lol", markerPlaceID);
         Log.i("lol", String.valueOf(markerPosition));
@@ -75,6 +77,33 @@ public class PopUpInfoWindow extends Activity {
         setLayout();
         place();
         getPhoto();
+
+        Button getDirections = findViewById(R.id.directions);
+        getDirections.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("lol", String.valueOf(markerPosition) + " and  " + currentPosition);
+                String url = getUrl(currentPosition, markerPosition, "walking");
+                new FetchURL(getParent()).execute(url, "walking");
+                finish();
+            }
+        });
+    }
+
+    private String getUrl(LatLng origin, LatLng dest, String directionMode) {
+        // Origin of route
+        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+        // Destination of route
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+        // Mode
+        String mode = "mode=" + directionMode;
+        // Building the parameters to the web service
+        String parameters = str_origin + "&" + str_dest + "&" + mode;
+        // Output format
+        String output = "json";
+        // Building the url to the web service
+        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters + "&key=" + getString(R.string.google_directions_key);
+        return url;
     }
 
     private void setLayout(){
@@ -98,14 +127,6 @@ public class PopUpInfoWindow extends Activity {
  //       title.setText(markerTitle);
 
 
-    }
-
-    private void getPlaceDetails() throws IOException {
-      ////  String latlng = "latlng=" + markerPosition.latitude + "," + markerPosition.longitude;
-     //   Log.i("lol", latlng);
-
-      //  String url ="https://maps.googleapis.com/maps/api/geocode/json?" + latlng +
-       //         "&location_type=ROOFTOP&result_type=street_address&key=" + getString(R.string.google_directions_key);
     }
 
     private void place(){
@@ -172,8 +193,8 @@ public class PopUpInfoWindow extends Activity {
 
             // Create a FetchPhotoRequest.
             FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                    .setMaxWidth(700) // Optional.
-                    .setMaxHeight(700) // Optional.
+                    .setMaxWidth(600) // Optional.
+                    .setMaxHeight(600) // Optional.
                     .build();
             placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
                 Bitmap bitmap = fetchPhotoResponse.getBitmap();
@@ -189,6 +210,11 @@ public class PopUpInfoWindow extends Activity {
             });
         });
 
+
+    }
+
+    @Override
+    public void onTaskDone(Object... values) {
 
     }
 }

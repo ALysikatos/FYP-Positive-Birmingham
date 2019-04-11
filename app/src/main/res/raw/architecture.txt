@@ -1,6 +1,6 @@
-52.480111,-1.9040105,Birmingham Museum & Art Gallery,ChIJo0dMkYy8cEgRRJR-gJ-142Y
+52.480111,-1.905656,Birmingham Museum & Art Gallery,ChIJo0dMkYy8cEgRRJR-gJ-142Y
 52.4811907,-1.9011252,St. Philip's Cathedral,ChIJyZhgKIy8cEgRb68F_0J9zwQ
-52.4833951,-1.8934821,Birmingham Magistrates' Court,ChIJ9Tph9Y-8cEgR_xGrGNA_ZTA
-52.4818738,-1.8971905,Great Western Arcade,ChIJDZiQ9468cEgR1XmYBKwQ5vI
+52.4835549,-1.8956019,Birmingham Magistrates' Court,ChIJ9Tph9Y-8cEgR_xGrGNA_ZTA
+52.4818738,-1.8993845,Great Western Arcade,ChIJDZiQ9468cEgR1XmYBKwQ5vI
 52.4749434,-1.9090747,The Cube,ChIJp194avW8cEgRvtk7kA6R890
 52.4797411,-1.9106777,Library of Birmingham,ChIJzbhBevO8cEgRsizctkhHvG0
