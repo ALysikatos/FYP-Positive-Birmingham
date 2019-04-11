@@ -276,26 +276,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public boolean onMarkerClick(Marker marker) {
 
-                        String url = getUrl(currentPosition, marker.getPosition(),"walking" );
+                        String url = getUrl(currentPosition, marker.getPosition(), "walking");
                         new FetchURL(MapsActivity.this).execute(url, "walking");
                         destination = marker;
-                       // Log.i("testing", distance);
-                        Intent intent = new Intent(MapsActivity.this, PopUpInfoWindow.class);
+                        Log.i("testing", String.valueOf(currentPosition));
+                        Log.i("testing", String.valueOf(marker.getPosition()));
+                        if (!marker.getPosition().equals(currentPosition)) {
 
-                        Bundle bundle = new Bundle();
-                        bundle.putString("MARKER", marker.toString());
-                        bundle.putSerializable("MARKER_TITLE", marker.getTitle());
-                        bundle.putParcelable("MARKER_LATLNG", marker.getPosition());
-                        bundle.putString("MARKER_PLACEID", marker.getTag().toString());
-                        Log.i("testing", marker.getTag().toString());
+                            Intent intent = new Intent(MapsActivity.this, PopUpInfoWindow.class);
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString("MARKER", marker.toString());
+                            bundle.putSerializable("MARKER_TITLE", marker.getTitle());
+                            bundle.putParcelable("MARKER_LATLNG", marker.getPosition());
+                            bundle.putString("MARKER_PLACEID", marker.getTag().toString());
+                            Log.i("testing", marker.getTag().toString());
 
 
-                     //   bundle.putSerializable("MARKER_ARRAY", markersList);
-                        intent.putExtras(bundle);
+                            //   bundle.putSerializable("MARKER_ARRAY", markersList);
+                            intent.putExtras(bundle);
 
 
-                        Log.i("lol", marker.toString());
-                        startActivity(intent);
+                            Log.i("lol", marker.toString());
+                            startActivity(intent);
+                    }
 
 //                        LayoutInflater inflater = (LayoutInflater) MapsActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 //                        View layout = inflater.inflate(R.layout.popup,null);
