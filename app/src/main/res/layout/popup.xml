@@ -34,14 +34,31 @@
         android:layout_marginTop="5dp"
         android:textColor="@android:color/white"
         android:textStyle="bold"
-        android:layout_gravity="center"
-        android:text="ARCHITECTURE TITLE" />
+        android:layout_gravity="center" />
 
     <ImageView
+        android:id="@+id/archImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="15dp"/>
+
+    <RatingBar
+        android:id="@+id/ratingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="1.0"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:progressTint="#ffff00"/>
+
+    <TextView
+        android:id="@+id/txtRatings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:layout_gravity="center" />
 
     <TextView
         android:id="@+id/txtInfo"
@@ -59,7 +76,7 @@
         android:layout_marginTop="5dp"
         android:textColor="@android:color/white"
         android:layout_gravity="center"
-        android:text="www.link.com" />
+        android:autoLink="web" />
 
 
     <!--<Button-->

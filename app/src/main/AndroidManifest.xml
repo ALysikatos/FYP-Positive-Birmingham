@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.positivebirmingham">
 
     <!--
@@ -32,6 +33,10 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
+        <meta-data
+            tools:replace="android:value"
+            android:name="android.support.VERSION"
+            android:value="26.0.0" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -52,6 +57,8 @@
         <activity android:name="com.example.positivebirmingham.PopUpInfoWindow"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Dialog.Alert"/>
+
+
     </application>
 
 </manifest>
