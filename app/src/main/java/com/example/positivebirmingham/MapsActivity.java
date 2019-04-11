@@ -285,6 +285,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Bundle bundle = new Bundle();
                         bundle.putString("MARKER", marker.toString());
                         bundle.putSerializable("MARKER_TITLE", marker.getTitle());
+                        bundle.putParcelable("MARKER_LATLNG", marker.getPosition());
+                        bundle.putString("MARKER_PLACEID", marker.getTag().toString());
+                        Log.i("testing", marker.getTag().toString());
+
+
                      //   bundle.putSerializable("MARKER_ARRAY", markersList);
                         intent.putExtras(bundle);
 
@@ -332,18 +337,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // read every line of the file into the line-variable, on line at the time
             while ((line = reader.readLine()) != null) {
                 destination = null;
-                String[] architecture = line.split(",", 3);
+                String[] architecture = line.split(",", 4);
                 System.out.println(architecture[0]);
                 System.out.println(architecture[1]);
                 System.out.println(architecture[2]);
+                System.out.println(architecture[3]);
 
                 double latitude = Double.parseDouble(architecture[0]);
                 double longitude = Double.parseDouble(architecture[1]);
+                String architectureName = architecture[2];
+                String placeID = architecture[3];
 
                 Marker marker = mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(latitude, longitude))
-                        .title(architecture[2])
+                        .title(architectureName)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+                marker.setTag(placeID);
                 markersList.add(marker);
             }
             reader.close();

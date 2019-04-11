@@ -1,6 +1,6 @@
-52.4801,-1.9035,Birmingham Museum
-52.4812,-1.8989,St Philip's Cathedral
-52.4829,-1.8943,Victoria Law Courts
-52.4816,-1.8973,Great Western Arcade
-52.4749,-1.9069,The Cube
-52.4797,-1.9085,Birmingham Library
+52.480111,-1.9040105,Birmingham Museum,ChIJo0dMkYy8cEgRRJR-gJ-142Y
+52.4811907,-1.9011252,St Philip's Cathedral,ChIJyZhgKIy8cEgRb68F_0J9zwQ
+52.4833951,-1.8934821,Victoria Law Courts,ChIJ9Tph9Y-8cEgR_xGrGNA_ZTA
+52.4818738,-1.8971905,Great Western Arcade,ChIJDZiQ9468cEgR1XmYBKwQ5vI
+52.4749434,-1.9090747,The Cube,ChIJp194avW8cEgRvtk7kA6R890
+52.4797411,-1.9106777,Birmingham Library,ChIJzbhBevO8cEgRsizctkhHvG0
