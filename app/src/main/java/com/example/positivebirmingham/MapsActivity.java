@@ -1,10 +1,10 @@
 package com.example.positivebirmingham;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -16,8 +16,8 @@ import android.widget.Toast;
 
 
 import com.example.positivebirmingham.dummy.DummyContent;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,15 +29,21 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
+
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 //52.486992, -1.890255
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, TaskLoadedCallback,
@@ -57,6 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private CameraPosition mCameraPosition;
 
     public static Polyline currentPolyline;
+    public static Marker destinationMarker;
     private String distance;
     private String duration;
     private Marker destination;
@@ -249,7 +256,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //add marker current location and move camera
         //Adding the created the marker on the map
         mMap.addMarker(markerOptions);
-        addArchitectureMarkers();
+        //addArchitectureMarkers();
+        addMarkers();
         mMap.getUiSettings().setZoomControlsEnabled(true);
         //mMap.getUiSettings().setMapToolbarEnabled(False).
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -269,10 +277,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public boolean onMarkerClick(Marker marker) {
 
-                        String url = getUrl(currentPosition, marker.getPosition(),"walking" );
-                        new FetchURL(MapsActivity.this).execute(url, "walking");
+                        //String url = getUrl(currentPosition, marker.getPosition(), "walking");
+                       // new FetchURL(MapsActivity.this).execute(url, "walking");
                         destination = marker;
-                       // Log.i("testing", distance);
+                        Log.i("testing", String.valueOf(currentPosition));
+                        Log.i("testing", String.valueOf(marker.getPosition()));
+                        if (!marker.getPosition().equals(currentPosition)) {
+
+                            Intent intent = new Intent(MapsActivity.this, PopUpInfoWindow.class);
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString("MARKER", marker.toString());
+                            bundle.putSerializable("MARKER_TITLE", marker.getTitle());
+                            bundle.putParcelable("MARKER_LATLNG", marker.getPosition());
+                            bundle.putParcelable("CURRENT_LATLNG", currentPosition);
+                            bundle.putString("MARKER_PLACEID", marker.getTag().toString());
+                            Log.i("testing", marker.getTag().toString());
+                            destinationMarker = marker;
+
+
+                            //   bundle.putSerializable("MARKER_ARRAY", markersList);
+                            intent.putExtras(bundle);
+
+
+                            Log.i("lol", marker.toString());
+                            startActivity(intent);
+                    }
+
+//                        LayoutInflater inflater = (LayoutInflater) MapsActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//                        View layout = inflater.inflate(R.layout.popup,null);
+//                        PopupWindow pw = new PopupWindow(layout, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+//                        pw.showAtLocation(layout, Gravity.CENTER, 0, 0);
                         return false;
                     }
                 }
@@ -309,18 +344,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // read every line of the file into the line-variable, on line at the time
             while ((line = reader.readLine()) != null) {
                 destination = null;
-                String[] architecture = line.split(",", 3);
+                String[] architecture = line.split(",", 4);
                 System.out.println(architecture[0]);
                 System.out.println(architecture[1]);
                 System.out.println(architecture[2]);
+                System.out.println(architecture[3]);
 
                 double latitude = Double.parseDouble(architecture[0]);
                 double longitude = Double.parseDouble(architecture[1]);
+                String architectureName = architecture[2];
+                String placeID = architecture[3];
 
                 Marker marker = mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(latitude, longitude))
-                        .title(architecture[2])
+                        .title(architectureName)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+                marker.setTag(placeID);
                 markersList.add(marker);
             }
             reader.close();
@@ -333,6 +372,119 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void addMarkers() {
+        try {
+            // Get the text file
+            InputStream file = getResources().openRawResource(R.raw.placeids);
+
+            // check if file is not empty
+            // if (file.exists() && file.length() != 0) {
+
+            // read the file to get contents
+            BufferedReader reader = new BufferedReader(new InputStreamReader(file));
+            String line;
+
+            // read every line of the file into the line-variable, on line at the time
+            while ((line = reader.readLine()) != null) {
+                destination = null;
+                String[] architecture = line.split(",", 2);
+                System.out.println(architecture[0]);
+                System.out.println(architecture[1]);
+
+                String architectureName = architecture[0];
+                String placeID = architecture[1];
+
+                // Initialize Places.
+                Places.initialize(getApplicationContext(), getString(R.string.google_directions_key));
+
+// Create a new Places client instance.
+                PlacesClient placesClient = Places.createClient(this);
+
+                // Specify the fields to return.
+                List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG);
+
+// Construct a request object, passing the place ID and fields array.
+                FetchPlaceRequest request = FetchPlaceRequest.builder(placeID, placeFields)
+                        .build();
+
+                placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+                    Place place = response.getPlace();
+                    Log.i("TAG", "Place found: " + place.getName());
+                    LatLng latlng = place.getLatLng();
+
+                    Marker marker = mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(place.getLatLng().latitude, place.getLatLng().longitude))
+                            .title(architectureName)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+                    marker.setTag(placeID);
+                    markersList.add(marker);
+
+
+                }).addOnFailureListener((exception) -> {
+                    if (exception instanceof ApiException) {
+                        ApiException apiException = (ApiException) exception;
+                        int statusCode = apiException.getStatusCode();
+                        // Handle error with given status code.
+                        Log.e("TAG", "Place not found: " + exception.getMessage());
+                    }
+                });
+
+//                Marker marker = mMap.addMarker(new MarkerOptions()
+//                        .position(new LatLng(latitude, longitude))
+//                        .title(architectureName)
+//                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+//                marker.setTag(placeID);
+//                markersList.add(marker);
+            }
+            reader.close();
+            Log.i("mytag", "my log");
+            Marker mark = markersList.get(1);
+            LatLng lat = mark.getPosition();
+            Log.i("array", String.valueOf(lat));
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+//
+//    private LatLng getLatLng(String placeID){
+//        LatLng hello;
+//        // Initialize Places.
+//        Places.initialize(getApplicationContext(), getString(R.string.google_directions_key));
+//
+//// Create a new Places client instance.
+//        PlacesClient placesClient = Places.createClient(this);
+//
+//        // Specify the fields to return.
+//        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG);
+//
+//// Construct a request object, passing the place ID and fields array.
+//        FetchPlaceRequest request = FetchPlaceRequest.builder(placeID, placeFields)
+//                .build();
+//
+//        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+//            Place place = response.getPlace();
+//            Log.i("TAG", "Place found: " + place.getName());
+//            LatLng latlngyy = place.getLatLng();
+//            hi(latlngyy);
+//            return latlngyy;
+//
+//        }).addOnFailureListener((exception) -> {
+//            if (exception instanceof ApiException) {
+//                ApiException apiException = (ApiException) exception;
+//                int statusCode = apiException.getStatusCode();
+//                // Handle error with given status code.
+//                Log.e("TAG", "Place not found: " + exception.getMessage());
+//            }
+//        });
+//        return latlngyy;
+//    }
+
+    private void hi(LatLng x){
+
     }
 
     private String getUrl(LatLng origin, LatLng dest, String directionMode) {
@@ -401,9 +553,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public static void getDirections(String distance, String duration) {
         //Log.i("test", destination.getTitle());
-       Log.i("test", distance);
+        String theSnippet = "Distance: " + distance + ", " + duration + " walk";
+
+        // MapsActivity.currentPolyline.setSnippet(theSnippet);
+        // MapsActivity.currentPolyline.showInfoWindow();
+
+        Log.i("test", distance);
        Log.i("test", duration);
     }
+
 
     public void setDistanceDuration(Marker destination, String distance, String duration) {
         Log.i("markers", String.valueOf(destination));
