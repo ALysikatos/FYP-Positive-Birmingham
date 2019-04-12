@@ -11,6 +11,8 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -32,6 +34,7 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+
 
 
 import java.io.IOException;
@@ -150,7 +153,9 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
             Log.i(TAG, "Place found: " + place.getName());
             if (!place.getName().isEmpty()) {
                 TextView title = findViewById(R.id.txtTitle);
-                title.setText(place.getName());
+                SpannableString content = new SpannableString(place.getName());
+                content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+                title.setText(content);
             }
             Log.i(TAG, "Place found: " + place.getWebsiteUri());
             if (!(place.getWebsiteUri() == null)){

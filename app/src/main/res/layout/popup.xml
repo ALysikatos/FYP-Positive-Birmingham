@@ -34,14 +34,9 @@
         android:layout_marginTop="5dp"
         android:textColor="@android:color/white"
         android:textStyle="bold"
-        android:layout_gravity="center" />
-
-    <ImageView
-        android:id="@+id/archImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="15dp"/>
+        android:textSize="18sp"/>
+
 
     <RatingBar
         android:id="@+id/ratingBar"
@@ -59,6 +54,13 @@
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
         android:layout_gravity="center" />
+
+    <ImageView
+        android:id="@+id/archImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"/>
 
     <TextView
         android:id="@+id/txtInfo"

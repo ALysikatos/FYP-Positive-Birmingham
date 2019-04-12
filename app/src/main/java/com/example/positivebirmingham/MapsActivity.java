@@ -1,12 +1,10 @@
 package com.example.positivebirmingham;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -14,17 +12,12 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.Toast;
 
 
 import com.example.positivebirmingham.dummy.DummyContent;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -36,15 +29,21 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
+
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 //52.486992, -1.890255
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, TaskLoadedCallback,
@@ -257,7 +256,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //add marker current location and move camera
         //Adding the created the marker on the map
         mMap.addMarker(markerOptions);
-        addArchitectureMarkers();
+        //addArchitectureMarkers();
+        addMarkers();
         mMap.getUiSettings().setZoomControlsEnabled(true);
         //mMap.getUiSettings().setMapToolbarEnabled(False).
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -372,6 +372,119 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void addMarkers() {
+        try {
+            // Get the text file
+            InputStream file = getResources().openRawResource(R.raw.placeids);
+
+            // check if file is not empty
+            // if (file.exists() && file.length() != 0) {
+
+            // read the file to get contents
+            BufferedReader reader = new BufferedReader(new InputStreamReader(file));
+            String line;
+
+            // read every line of the file into the line-variable, on line at the time
+            while ((line = reader.readLine()) != null) {
+                destination = null;
+                String[] architecture = line.split(",", 2);
+                System.out.println(architecture[0]);
+                System.out.println(architecture[1]);
+
+                String architectureName = architecture[0];
+                String placeID = architecture[1];
+
+                // Initialize Places.
+                Places.initialize(getApplicationContext(), getString(R.string.google_directions_key));
+
+// Create a new Places client instance.
+                PlacesClient placesClient = Places.createClient(this);
+
+                // Specify the fields to return.
+                List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG);
+
+// Construct a request object, passing the place ID and fields array.
+                FetchPlaceRequest request = FetchPlaceRequest.builder(placeID, placeFields)
+                        .build();
+
+                placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+                    Place place = response.getPlace();
+                    Log.i("TAG", "Place found: " + place.getName());
+                    LatLng latlng = place.getLatLng();
+
+                    Marker marker = mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(place.getLatLng().latitude, place.getLatLng().longitude))
+                            .title(architectureName)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+                    marker.setTag(placeID);
+                    markersList.add(marker);
+
+
+                }).addOnFailureListener((exception) -> {
+                    if (exception instanceof ApiException) {
+                        ApiException apiException = (ApiException) exception;
+                        int statusCode = apiException.getStatusCode();
+                        // Handle error with given status code.
+                        Log.e("TAG", "Place not found: " + exception.getMessage());
+                    }
+                });
+
+//                Marker marker = mMap.addMarker(new MarkerOptions()
+//                        .position(new LatLng(latitude, longitude))
+//                        .title(architectureName)
+//                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+//                marker.setTag(placeID);
+//                markersList.add(marker);
+            }
+            reader.close();
+            Log.i("mytag", "my log");
+            Marker mark = markersList.get(1);
+            LatLng lat = mark.getPosition();
+            Log.i("array", String.valueOf(lat));
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+//
+//    private LatLng getLatLng(String placeID){
+//        LatLng hello;
+//        // Initialize Places.
+//        Places.initialize(getApplicationContext(), getString(R.string.google_directions_key));
+//
+//// Create a new Places client instance.
+//        PlacesClient placesClient = Places.createClient(this);
+//
+//        // Specify the fields to return.
+//        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG);
+//
+//// Construct a request object, passing the place ID and fields array.
+//        FetchPlaceRequest request = FetchPlaceRequest.builder(placeID, placeFields)
+//                .build();
+//
+//        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+//            Place place = response.getPlace();
+//            Log.i("TAG", "Place found: " + place.getName());
+//            LatLng latlngyy = place.getLatLng();
+//            hi(latlngyy);
+//            return latlngyy;
+//
+//        }).addOnFailureListener((exception) -> {
+//            if (exception instanceof ApiException) {
+//                ApiException apiException = (ApiException) exception;
+//                int statusCode = apiException.getStatusCode();
+//                // Handle error with given status code.
+//                Log.e("TAG", "Place not found: " + exception.getMessage());
+//            }
+//        });
+//        return latlngyy;
+//    }
+
+    private void hi(LatLng x){
+
     }
 
     private String getUrl(LatLng origin, LatLng dest, String directionMode) {
