@@ -47,7 +47,7 @@
         <!--android:name="com.google.android.gms.maps.SupportMapFragment"/>-->
 
         <FrameLayout
-            android:id="@+id/tab_content"
+            android:id="@+id/fragment_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:name="com.google.android.gms.maps.SupportMapFragment"/>

@@ -9,9 +9,13 @@ import android.widget.TextView;
 import com.example.positivebirmingham.ListFragment.OnListFragmentInteractionListener;
 import com.example.positivebirmingham.dummy.DummyContent.DummyItem;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 /**
+ * Recycle viewholder holds view
+ * adapter binds data to the view
  * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
@@ -61,12 +65,14 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final TextView mIdView;
         public final TextView mContentView;
         public DummyItem mItem;
+        public final TextView mDistanceView;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.item_number);
             mContentView = (TextView) view.findViewById(R.id.content);
+            mDistanceView = (TextView) view.findViewById(R.id.distance);
         }
 
         @Override
