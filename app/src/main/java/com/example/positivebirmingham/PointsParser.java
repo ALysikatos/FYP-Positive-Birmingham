@@ -16,114 +16,99 @@ import java.util.List;
 
 public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
 
-        TaskLoadedCallback taskCallback;
-        String directionMode = "walking";
+    TaskLoadedCallback taskCallback;
+    String directionMode = "walking";
 
-        public PointsParser(Context mContext, String directionMode) {
-            this.taskCallback = (TaskLoadedCallback) mContext;
-            this.directionMode = directionMode;
+    public PointsParser(Context mContext, String directionMode) {
+        this.taskCallback = (TaskLoadedCallback) mContext;
+        this.directionMode = directionMode;
+    }
+
+    // Parsing the data in non-ui thread
+    @Override
+    protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+
+        JSONObject jObject;
+        List<List<HashMap<String, String>>> routes = null;
+
+        try {
+            jObject = new JSONObject(jsonData[0]);
+            Log.d("mylog", jsonData[0].toString());
+            DataParser parser = new DataParser();
+            Log.d("mylog", parser.toString());
+
+            // Starts parsing data
+            routes = parser.parse(jObject);
+            Log.d("mylog", "Executing routes");
+            Log.d("mylog", routes.toString());
+
+        } catch (Exception e) {
+            Log.d("mylog", e.toString());
+            e.printStackTrace();
         }
+        return routes;
+    }
 
-        // Parsing the data in non-ui thread
-        @Override
-        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+    // Executes in UI thread, after the parsing process
+    @Override
+    protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+        ArrayList<LatLng> points;
+        PolylineOptions lineOptions = null;
+        String distance = "";
+        String duration = "";
 
-            JSONObject jObject;
-            List<List<HashMap<String, String>>> routes = null;
+        // Traversing through all the routes
+        for (int i = 0; i < result.size(); i++) {
+            points = new ArrayList<>();
+            lineOptions = new PolylineOptions();
+            // Fetching i-th route
+            List<HashMap<String, String>> path = result.get(i);
+            // Fetching all the points in i-th route
+            for (int j = 0; j < path.size(); j++) {
+                HashMap<String, String> point = path.get(j);
 
-            try {
-                jObject = new JSONObject(jsonData[0]);
-                Log.d("mylog", jsonData[0].toString());
-                DataParser parser = new DataParser();
-                Log.d("mylog", parser.toString());
-
-                // Starts parsing data
-                routes = parser.parse(jObject);
-                Log.d("mylog", "Executing routes");
-                Log.d("mylog", routes.toString());
-
-            } catch (Exception e) {
-                Log.d("mylog", e.toString());
-                e.printStackTrace();
-            }
-            return routes;
-        }
-
-        // Executes in UI thread, after the parsing process
-        @Override
-        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList<LatLng> points;
-            PolylineOptions lineOptions = null;
-            String distance = "";
-            String duration = "";
-
-            // Traversing through all the routes
-            for (int i = 0; i < result.size(); i++) {
-                points = new ArrayList<>();
-                lineOptions = new PolylineOptions();
-                // Fetching i-th route
-                List<HashMap<String, String>> path = result.get(i);
-                // Fetching all the points in i-th route
-                for (int j = 0; j < path.size(); j++) {
-                    HashMap<String, String> point = path.get(j);
-
-                    if(j==0){    // Get distance from the list
-                        distance = (String)point.get("distance");
-                        continue;
-                    }else if(j==1){ // Get duration from the list
-                        duration = (String)point.get("duration");
-                        continue;
-                    }
+                if (j == 0) {    // Get distance from the list
+                    distance = (String) point.get("distance");
+                    continue;
+                } else if (j == 1) { // Get duration from the list
+                    duration = (String) point.get("duration");
+                    continue;
+                }
 //                    Log.i("distance", distance);
 //                    Log.i("mylog", duration);
 
-                    double lat = Double.parseDouble(point.get("lat"));
-                    double lng = Double.parseDouble(point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
-                    points.add(position);
-                }
-                // Adding all the points in the route to LineOptions
-                lineOptions.addAll(points);
-                if (directionMode.equalsIgnoreCase("walking")) {
-                    lineOptions.width(10);
-                    lineOptions.color(Color.MAGENTA);
-                } else {
-                    lineOptions.width(20);
-                    lineOptions.color(Color.BLUE);
-                }
-                Log.d("mylog", "onPostExecute lineoptions decoded");
+                double lat = Double.parseDouble(point.get("lat"));
+                double lng = Double.parseDouble(point.get("lng"));
+                LatLng position = new LatLng(lat, lng);
+                points.add(position);
             }
+            // Adding all the points in the route to LineOptions
+            lineOptions.addAll(points);
+            if (directionMode.equalsIgnoreCase("walking")) {
+                lineOptions.width(10);
+                lineOptions.color(Color.MAGENTA);
+            } else {
+                lineOptions.width(20);
+                lineOptions.color(Color.BLUE);
+            }
+            Log.d("mylog", "onPostExecute lineoptions decoded");
+        }
 
-            // Drawing polyline in the Google Map for the i-th route
-            if (lineOptions != null) {
-                //mMap.addPolyline(lineOptions);
-               // Log.i("lol", lineOptions + " + " + distance + " + " + duration);
-                //taskCallback.onTaskDone(lineOptions,distance,duration);
-                MapsActivity.getDirections(distance, duration);
+        // Drawing polyline in the Google Map for the i-th route
+        if (lineOptions != null) {
+//                taskCallback.onTaskDone(lineOptions,distance,duration);
 
+            if (MapsActivity.currentPolyline != null)
+                MapsActivity.currentPolyline.remove();
+            MapsActivity.currentPolyline = MapsActivity.mMap.addPolyline(lineOptions);
 
-                if (MapsActivity.currentPolyline != null)
-                    MapsActivity.currentPolyline.remove();
-                MapsActivity.currentPolyline = MapsActivity.mMap.addPolyline(lineOptions);
-
-                String theSnippet = "Distance: " + distance + ", " + duration + " walk";
-//                if (MapsActivity.destinationMarker != null)
-//                    MapsActivity.destinationMarker.remove();
+            String theSnippet = "Distance: " + distance + ", " + duration + " walk";
+            if (MapsActivity.destinationMarker != null) {
                 MapsActivity.destinationMarker.setSnippet(theSnippet);
                 MapsActivity.destinationMarker.showInfoWindow();
-
-               // MapsActivity.currentPolyline.setSnippet(theSnippet);
-               // MapsActivity.currentPolyline.showInfoWindow();
-
-                Log.i("lolz", String.valueOf(MapsActivity.currentPolyline.getPoints().get(0)));
-                //Log.i("lolz", String.valueOf(MapsActivity.currentPolyline.getPoints().));
-
-
-
-                //taskCallback.onTaskDone(distance);
-
-            } else {
-                Log.d("mylog", "without Polylines drawn");
             }
+        } else {
+            Log.d("mylog", "without Polylines drawn");
         }
+    }
 }

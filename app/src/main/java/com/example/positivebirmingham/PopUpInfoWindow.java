@@ -1,33 +1,21 @@
 package com.example.positivebirmingham;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
@@ -35,23 +23,16 @@ import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
-
-
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 import static com.android.volley.VolleyLog.TAG;
+import static com.example.positivebirmingham.MapsActivity.destinationMarker;
+import static com.example.positivebirmingham.MapsActivity.mMap;
+import static com.example.positivebirmingham.MapsActivity.tabLayout;
 
 public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
-    LinearLayout linearLayout1;
 
-    LinearLayout layoutOfPopup;
-    PopupWindow popupMessage;
-    Button popupButton, insidePopupButton;
-    TextView popupText;
     String markerClicked;
     String markerTitle;
     LatLng markerPosition;
@@ -62,35 +43,19 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        //linearLayout1 = (LinearLayout) findViewById(R.id.linearLayout1);
-
         Bundle bundle = intent.getExtras();
+
         markerClicked = bundle.getString("MARKER");
         markerTitle = bundle.getString("MARKER_TITLE");
         markerPosition = bundle.getParcelable("MARKER_LATLNG");
         currentPosition = bundle.getParcelable("CURRENT_LATLNG");
         markerPlaceID = bundle.getString("MARKER_PLACEID");
-        Log.i("lol", markerPlaceID);
-        Log.i("lol", String.valueOf(markerPosition));
-      //  ArrayList<Marker> allMarkers = (ArrayList<Marker>) bundle.getSerializable("MARKER_ARRAY");
-        //Log.i("lol", String.valueOf(allMarkers));
 
-       setContentView(R.layout.popup);
+        setContentView(R.layout.popup);
         //getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         setLayout();
-        place();
+        getPlaceInfo();
         getPhoto();
-
-        Button getDirections = findViewById(R.id.directions);
-        getDirections.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("lol", String.valueOf(markerPosition) + " and  " + currentPosition);
-                String url = getUrl(currentPosition, markerPosition, "walking");
-                new FetchURL(getParent()).execute(url, "walking");
-                finish();
-            }
-        });
     }
 
     private String getUrl(LatLng origin, LatLng dest, String directionMode) {
@@ -109,7 +74,7 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
         return url;
     }
 
-    private void setLayout(){
+    private void setLayout() {
 
         Button close = findViewById(R.id.closePopup);
         close.setOnClickListener(new View.OnClickListener() {
@@ -117,6 +82,15 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
             public void onClick(View v) {
                 finish();
             }
+        });
+
+        Button getDirections = findViewById(R.id.directions);
+        getDirections.setOnClickListener(v -> {
+            String url = getUrl(currentPosition, markerPosition, "walking");
+            new FetchURL(getParent()).execute(url, "walking");
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationMarker.getPosition(), 16));
+            tabLayout.getTabAt(0).select();
+            finish();
         });
 //        TextView txtclose = findViewById(R.id.txtclose);
 //        txtclose.setOnClickListener(new View.OnClickListener() {
@@ -126,13 +100,11 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
 //            }
 //        });
 
- //       TextView title = findViewById(R.id.txtTitle);
- //       title.setText(markerTitle);
-
-
+        //       TextView title = findViewById(R.id.txtTitle);
+        //       title.setText(markerTitle);
     }
 
-    private void place(){
+    private void getPlaceInfo() {
         // Initialize Places.
         Places.initialize(getApplicationContext(), getString(R.string.google_directions_key));
 
@@ -158,7 +130,7 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
                 title.setText(content);
             }
             Log.i(TAG, "Place found: " + place.getWebsiteUri());
-            if (!(place.getWebsiteUri() == null)){
+            if (!(place.getWebsiteUri() == null)) {
                 TextView url = findViewById(R.id.txtLink);
                 url.setText(place.getWebsiteUri().toString());
             }
@@ -183,7 +155,7 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
         });
     }
 
-    private void getPhoto(){
+    private void getPhoto() {
         List<Place.Field> fields = Arrays.asList(Place.Field.PHOTO_METADATAS);
         FetchPlaceRequest placeRequest = FetchPlaceRequest.builder(markerPlaceID, fields).build();
         PlacesClient placesClient = Places.createClient(this);
@@ -198,8 +170,8 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
 
             // Create a FetchPhotoRequest.
             FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                    .setMaxWidth(600) // Optional.
-                    .setMaxHeight(600) // Optional.
+                    .setMaxWidth(600)
+                    .setMaxHeight(600)
                     .build();
             placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
                 Bitmap bitmap = fetchPhotoResponse.getBitmap();
@@ -214,8 +186,6 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
                 }
             });
         });
-
-
     }
 
     @Override

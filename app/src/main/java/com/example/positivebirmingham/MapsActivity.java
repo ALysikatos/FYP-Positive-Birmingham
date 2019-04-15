@@ -4,18 +4,15 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.net.Uri;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.widget.Toast;
 
-
-import com.example.positivebirmingham.dummy.DummyContent;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -31,12 +28,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
-
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -47,33 +42,27 @@ import java.util.List;
 //52.486992, -1.890255
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, TaskLoadedCallback,
-        TabFragment.OnFragmentInteractionListener, ListFragment.OnListFragmentInteractionListener {
+        ListFragment.OnListFragmentInteractionListener {
 
     public static GoogleMap mMap;
+    public static Polyline currentPolyline;
+    public static Marker destinationMarker;
+    public static ArrayList<Marker> markersList = new ArrayList<Marker>();
+    public static LatLng currentPosition;
+    public static TabLayout tabLayout;
+
     private static final int LOCATION_REQUEST_CODE = 101;
+    private static final String KEY_CAMERA_POSITION = "camera_position";
+    private static final String KEY_LOCATION = "location";
 
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
     private Location currentLocation;
-    public FusedLocationProviderClient fusedLocationProviderClient;
-
-    private static final String KEY_CAMERA_POSITION = "camera_position";
-    private static final String KEY_LOCATION = "location";
-    private Fragment mContent;
     private CameraPosition mCameraPosition;
 
-    public static Polyline currentPolyline;
-    public static Marker destinationMarker;
-    private String distance;
-    private String duration;
-    private Marker destination;
-    private ArrayList<Marker> markersList = new ArrayList<Marker>();
-    LatLng currentPosition;
-    ArrayList<String> snip = new ArrayList<String>();
-
-    public SupportMapFragment supportMapFragment;
-    public TabFragment tabFragment;
+    public FusedLocationProviderClient fusedLocationProviderClient;
     public ListFragment listFragment;
+    public SupportMapFragment supportMapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +86,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         getLocationPermission();
         supportMapFragment = new SupportMapFragment();
-        tabFragment = new TabFragment();
         listFragment = new ListFragment();
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -105,8 +93,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setupTabLayout();
     }
 
+    /**
+     * Saves the state of the map when the activity is paused.
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (mMap != null) {
+            outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
+            outState.putParcelable(KEY_LOCATION, currentLocation);
+            super.onSaveInstanceState(outState);
+        }
+    }
+
     private void setupTabLayout() {
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -129,8 +129,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void onTabTapped(int position) {
         switch (position) {
             case 0:
-                // Do something when first tab is tapped here
-                Toast.makeText(this, "Tapped " + position, Toast.LENGTH_SHORT).show();
                 replaceFragment(supportMapFragment);
                 break;
             case 1:
@@ -145,18 +143,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         transaction.addToBackStack(null);
         transaction.replace(R.id.fragment_content, fragment);
         transaction.commit();
-    }
-
-    /**
-     * Saves the state of the map when the activity is paused.
-     */
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        if (mMap != null) {
-            outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
-            outState.putParcelable(KEY_LOCATION, currentLocation);
-            super.onSaveInstanceState(outState);
-        }
     }
 
     /**
@@ -183,11 +169,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
         } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
-            Log.i("yay", "h");
         }
     }
-
-
 
     //Basically before fetching user location you need to check if the user has granted location permissions for this app.
     // If the permission is not granted you can explicity request using ActivityCompat.requestPermissions() API.
@@ -256,8 +239,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //add marker current location and move camera
         //Adding the created the marker on the map
         mMap.addMarker(markerOptions);
-        //addArchitectureMarkers();
-        addMarkers();
+        addArchitectureMarkers();
         mMap.getUiSettings().setZoomControlsEnabled(true);
         //mMap.getUiSettings().setMapToolbarEnabled(False).
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -277,9 +259,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public boolean onMarkerClick(Marker marker) {
 
-                        //String url = getUrl(currentPosition, marker.getPosition(), "walking");
-                       // new FetchURL(MapsActivity.this).execute(url, "walking");
-                        destination = marker;
                         Log.i("testing", String.valueOf(currentPosition));
                         Log.i("testing", String.valueOf(marker.getPosition()));
                         if (!marker.getPosition().equals(currentPosition)) {
@@ -295,14 +274,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Log.i("testing", marker.getTag().toString());
                             destinationMarker = marker;
 
-
-                            //   bundle.putSerializable("MARKER_ARRAY", markersList);
                             intent.putExtras(bundle);
-
-
-                            Log.i("lol", marker.toString());
                             startActivity(intent);
-                    }
+                        }
 
 //                        LayoutInflater inflater = (LayoutInflater) MapsActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 //                        View layout = inflater.inflate(R.layout.popup,null);
@@ -312,69 +286,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
         );
-        searchMarkers();
-        for (String s : snip) {
-        Log.i("Snipper", s);
-        }
-       // addArray(snip);
-    }
-
-    private void searchMarkers(){
-        for (Marker m : markersList) {
-            String url = getUrl(currentPosition, m.getPosition(), "walking");
-           // new FetchURL(MapsActivity.this).execute(url, "walking");
-            destination = m;
-            Log.i("Dest", String.valueOf(m));
-        }
     }
 
     private void addArchitectureMarkers() {
-        try {
-
-            // Get the text file
-            InputStream file = getResources().openRawResource(R.raw.architecture);
-
-            // check if file is not empty
-            // if (file.exists() && file.length() != 0) {
-
-            // read the file to get contents
-            BufferedReader reader = new BufferedReader(new InputStreamReader(file));
-            String line;
-
-            // read every line of the file into the line-variable, on line at the time
-            while ((line = reader.readLine()) != null) {
-                destination = null;
-                String[] architecture = line.split(",", 4);
-                System.out.println(architecture[0]);
-                System.out.println(architecture[1]);
-                System.out.println(architecture[2]);
-                System.out.println(architecture[3]);
-
-                double latitude = Double.parseDouble(architecture[0]);
-                double longitude = Double.parseDouble(architecture[1]);
-                String architectureName = architecture[2];
-                String placeID = architecture[3];
-
-                Marker marker = mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(latitude, longitude))
-                        .title(architectureName)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
-                marker.setTag(placeID);
-                markersList.add(marker);
-            }
-            reader.close();
-            Log.i("mytag", "my log");
-            Marker mark = markersList.get(1);
-            LatLng lat = mark.getPosition();
-            Log.i("array", String.valueOf(lat));
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void addMarkers() {
         try {
             // Get the text file
             InputStream file = getResources().openRawResource(R.raw.placeids);
@@ -388,7 +302,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             // read every line of the file into the line-variable, on line at the time
             while ((line = reader.readLine()) != null) {
-                destination = null;
                 String[] architecture = line.split(",", 2);
                 System.out.println(architecture[0]);
                 System.out.println(architecture[1]);
@@ -399,13 +312,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // Initialize Places.
                 Places.initialize(getApplicationContext(), getString(R.string.google_directions_key));
 
-// Create a new Places client instance.
+                // Create a new Places client instance.
                 PlacesClient placesClient = Places.createClient(this);
 
                 // Specify the fields to return.
                 List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG);
 
-// Construct a request object, passing the place ID and fields array.
+                // Construct a request object, passing the place ID and fields array.
                 FetchPlaceRequest request = FetchPlaceRequest.builder(placeID, placeFields)
                         .build();
 
@@ -421,7 +334,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     marker.setTag(placeID);
                     markersList.add(marker);
 
-
                 }).addOnFailureListener((exception) -> {
                     if (exception instanceof ApiException) {
                         ApiException apiException = (ApiException) exception;
@@ -430,61 +342,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Log.e("TAG", "Place not found: " + exception.getMessage());
                     }
                 });
-
-//                Marker marker = mMap.addMarker(new MarkerOptions()
-//                        .position(new LatLng(latitude, longitude))
-//                        .title(architectureName)
-//                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
-//                marker.setTag(placeID);
-//                markersList.add(marker);
             }
             reader.close();
-            Log.i("mytag", "my log");
-            Marker mark = markersList.get(1);
-            LatLng lat = mark.getPosition();
-            Log.i("array", String.valueOf(lat));
         } catch (NullPointerException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-//
-//    private LatLng getLatLng(String placeID){
-//        LatLng hello;
-//        // Initialize Places.
-//        Places.initialize(getApplicationContext(), getString(R.string.google_directions_key));
-//
-//// Create a new Places client instance.
-//        PlacesClient placesClient = Places.createClient(this);
-//
-//        // Specify the fields to return.
-//        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG);
-//
-//// Construct a request object, passing the place ID and fields array.
-//        FetchPlaceRequest request = FetchPlaceRequest.builder(placeID, placeFields)
-//                .build();
-//
-//        placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
-//            Place place = response.getPlace();
-//            Log.i("TAG", "Place found: " + place.getName());
-//            LatLng latlngyy = place.getLatLng();
-//            hi(latlngyy);
-//            return latlngyy;
-//
-//        }).addOnFailureListener((exception) -> {
-//            if (exception instanceof ApiException) {
-//                ApiException apiException = (ApiException) exception;
-//                int statusCode = apiException.getStatusCode();
-//                // Handle error with given status code.
-//                Log.e("TAG", "Place not found: " + exception.getMessage());
-//            }
-//        });
-//        return latlngyy;
-//    }
-
-    private void hi(LatLng x){
-
     }
 
     private String getUrl(LatLng origin, LatLng dest, String directionMode) {
@@ -512,79 +376,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        currentPolyline = mMap.addPolyline((PolylineOptions) values[0]);
 //
 //    //    if (distance!= null)
-            Log.i("distance", values[1].toString());
-            distance = values[1].toString();
-            duration = values[2].toString();
-
-            String theSnip = "Distance: " + distance + ", " + duration + " walk";
-            destination.setSnippet(theSnip);
-            destination.showInfoWindow();
-            Log.i("why", String.valueOf(destination));
-
-      //  if (duration!= null)
-            Log.i("distance", values[2].toString());
-            setDistanceDuration(destination, distance, duration);
-             Log.i("why", String.valueOf(destination));
-
-            snip.add(theSnip);
-            Log.i("Snip", theSnip);
-            Log.i("Snip", snip.get(0));
-            Log.i("Snip", String.valueOf(snip.size()));
-           // helpme(theSnip);
+//        Log.i("distance", values[1].toString());
+//        distance = values[1].toString();
+//        duration = values[2].toString();
+//
+//        String theSnip = "Distance: " + distance + ", " + duration + " walk";
+//        destination.setSnippet(theSnip);
+//        destination.showInfoWindow();
+//        Log.i("why", String.valueOf(destination));
+//
+//        //  if (duration!= null)
+//        Log.i("distance", values[2].toString());
+//        Log.i("why", String.valueOf(destination));
     }
 
-    public void helpme(String lol){
+    @Override
+    public void onListFragmentInteraction(Architecture.ArchitectureItem item) {
         for (Marker m : markersList) {
-            m.setSnippet(lol);
-           // indexMe++;
-            Log.i("pls", m.getSnippet());
-        }
+            if (m.getTitle().equals(item.architectureTitle)) {
 
-    }
+                Intent intent = new Intent(MapsActivity.this, PopUpInfoWindow.class);
 
-    public void addArray(ArrayList<String> x){
-        int index = 0;
-        for (Marker m : markersList) {
-            m.setSnippet(x.get(index));
-            index++;
-            Log.i("pls", m.getSnippet());
-        }
-    }
+                Bundle bundle = new Bundle();
+                bundle.putString("MARKER", m.toString());
+                bundle.putSerializable("MARKER_TITLE", m.getTitle());
+                bundle.putParcelable("MARKER_LATLNG", m.getPosition());
+                bundle.putParcelable("CURRENT_LATLNG", currentPosition);
+                bundle.putString("MARKER_PLACEID", m.getTag().toString());
+                destinationMarker = m;
 
-    public static void getDirections(String distance, String duration) {
-        //Log.i("test", destination.getTitle());
-        String theSnippet = "Distance: " + distance + ", " + duration + " walk";
-
-        // MapsActivity.currentPolyline.setSnippet(theSnippet);
-        // MapsActivity.currentPolyline.showInfoWindow();
-
-        Log.i("test", distance);
-       Log.i("test", duration);
-    }
-
-
-    public void setDistanceDuration(Marker destination, String distance, String duration) {
-        Log.i("markers", String.valueOf(destination));
-        for (Marker m : markersList) {
-            if (m.equals(destination)) {
-                Log.i("markers", String.valueOf(m));
-                //integer index = m.get
-                //markersList.set()
-                m.setSnippet("Distance: " + distance + ", " + duration + " walk");
-                m.showInfoWindow();
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
-
-            Log.i("marker", String.valueOf(m));
         }
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
-
     }
 }
