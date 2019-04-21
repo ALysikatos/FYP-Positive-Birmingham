@@ -1,9 +1,12 @@
 package com.example.positivebirmingham;
 
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.positivebirmingham.ListFragment.OnListFragmentInteractionListener;
@@ -39,12 +42,20 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     //binds data to ui elements
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        counter++;
-
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(String.valueOf(counter));
-        holder.mTitleView.setText(mValues.get(position).architectureTitle);
+        holder.mIdView.setText(String.valueOf(position+1));
+
+        if (Architecture.getITEMS() == null) {
+            Log.i("null", "null");
+        } else {
+            Log.i("notnull", "notnull");
+        }
+       holder.mTitleView.setText(mValues.get(position).architectureTitle);
+
         holder.mDistanceView.setText(String.valueOf(mValues.get(position).architectureDistance));
+        holder.mImageView.getLayoutParams().height = 300;
+        holder.mImageView.getLayoutParams().width = 300;
+        holder.mImageView.setImageBitmap(mValues.get(position).architectureImage);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +82,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final TextView mTitleView;
         public Architecture.ArchitectureItem mItem;
         public final TextView mDistanceView;
+        public final ImageView mImageView;
 
         public ViewHolder(View view) {
             super(view);
@@ -78,6 +90,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             mIdView = (TextView) view.findViewById(R.id.item_number);
             mTitleView = (TextView) view.findViewById(R.id.title);
             mDistanceView = (TextView) view.findViewById(R.id.distance);
+            mImageView = (ImageView) view.findViewById(R.id.architectureImage);
         }
 
         @Override

@@ -16,6 +16,7 @@ import java.util.List;
 
 public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
 
+    public static ArrayList<String> plspls = new ArrayList<>();
     TaskLoadedCallback taskCallback;
     String directionMode = "walking";
 
@@ -96,7 +97,18 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
 
         // Drawing polyline in the Google Map for the i-th route
         if (lineOptions != null) {
-//                taskCallback.onTaskDone(lineOptions,distance,duration);
+    //            taskCallback.onTaskDone(lineOptions,distance,duration);
+           // taskCallback.onTaskDone(distance);
+           // MapsActivity.theDistance.add(distance);
+            //Log.i("tipsy", String.valueOf(MapsActivity.theDistance.size()));
+
+
+
+            //            ArrayList<String> x = new ArrayList<>();
+//            x.add(distance);
+//            Log.i("tipsy", distance);
+           // Log.i("tipsy1", x.get(0));
+           // Log.i("tipsy2", x.get(2));
 
             if (MapsActivity.currentPolyline != null)
                 MapsActivity.currentPolyline.remove();

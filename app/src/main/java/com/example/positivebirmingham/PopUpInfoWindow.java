@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
@@ -29,15 +30,18 @@ import java.util.List;
 import static com.android.volley.VolleyLog.TAG;
 import static com.example.positivebirmingham.MapsActivity.destinationMarker;
 import static com.example.positivebirmingham.MapsActivity.mMap;
+import static com.example.positivebirmingham.MapsActivity.markerHashmap;
+import static com.example.positivebirmingham.MapsActivity.markersList;
 import static com.example.positivebirmingham.MapsActivity.tabLayout;
 
 public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
 
-    String markerClicked;
-    String markerTitle;
-    LatLng markerPosition;
-    LatLng currentPosition;
-    String markerPlaceID;
+    private String markerClicked;
+    private String markerTitle;
+    private LatLng markerPosition;
+    private LatLng currentPosition;
+    private String markerPlaceID;
+    private Bitmap markerImage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,11 +55,18 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
         currentPosition = bundle.getParcelable("CURRENT_LATLNG");
         markerPlaceID = bundle.getString("MARKER_PLACEID");
 
+        for (Marker m : markersList) {
+            if (m.getTitle().equals(markerTitle)){
+                Bitmap smallBitmap = markerHashmap.get(markerTitle);
+                markerImage = Bitmap.createScaledBitmap(smallBitmap,(int)(smallBitmap.getWidth()*3), (int)(smallBitmap.getHeight()*3), true);
+            }
+        }
+
         setContentView(R.layout.popup);
         //getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         setLayout();
         getPlaceInfo();
-        getPhoto();
+       // getPhoto();
     }
 
     private String getUrl(LatLng origin, LatLng dest, String directionMode) {
@@ -75,6 +86,14 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
     }
 
     private void setLayout() {
+
+        ImageView image = findViewById(R.id.archImage);
+        image.setImageBitmap(markerImage);
+        if (markerImage == null){
+            Log.i("Simran", "n");
+        } else {
+            Log.i("Simran", "y");
+        }
 
         Button close = findViewById(R.id.closePopup);
         close.setOnClickListener(new View.OnClickListener() {
@@ -104,9 +123,9 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
         //       title.setText(markerTitle);
     }
 
-    private void getPlaceInfo() {
+    public void getPlaceInfo() {
         // Initialize Places.
-        Places.initialize(getApplicationContext(), getString(R.string.google_directions_key));
+       //Places.initialize(getApplicationContext(), getString(R.string.google_directions_key));
 
 // Create a new Places client instance.
         PlacesClient placesClient = Places.createClient(this);
@@ -155,38 +174,41 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
         });
     }
 
-    private void getPhoto() {
-        List<Place.Field> fields = Arrays.asList(Place.Field.PHOTO_METADATAS);
-        FetchPlaceRequest placeRequest = FetchPlaceRequest.builder(markerPlaceID, fields).build();
-        PlacesClient placesClient = Places.createClient(this);
-        placesClient.fetchPlace(placeRequest).addOnSuccessListener((response) -> {
-            Place place = response.getPlace();
-
-            // Get the photo metadata.
-            PhotoMetadata photoMetadata = place.getPhotoMetadatas().get(0);
-
-            // Get the attribution text.
-            String attributions = photoMetadata.getAttributions();
-
-            // Create a FetchPhotoRequest.
-            FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                    .setMaxWidth(600)
-                    .setMaxHeight(600)
-                    .build();
-            placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
-                Bitmap bitmap = fetchPhotoResponse.getBitmap();
-                ImageView image = findViewById(R.id.archImage);
-                image.setImageBitmap(bitmap);
-            }).addOnFailureListener((exception) -> {
-                if (exception instanceof ApiException) {
-                    ApiException apiException = (ApiException) exception;
-                    int statusCode = apiException.getStatusCode();
-                    // Handle error with given status code.
-                    Log.e(TAG, "Place not found: " + exception.getMessage());
-                }
-            });
-        });
-    }
+//    private void getPhoto() {
+//        List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.PHOTO_METADATAS);
+//        FetchPlaceRequest placeRequest = FetchPlaceRequest.builder(markerPlaceID, fields).build();
+//        PlacesClient placesClient = Places.createClient(this);
+//        placesClient.fetchPlace(placeRequest).addOnSuccessListener((response) -> {
+//            Place place = response.getPlace();
+//
+//            // Get the photo metadata.
+//            PhotoMetadata photoMetadata = place.getPhotoMetadatas().get(0);
+//            if (place.getName().equals("The Cube")) {
+//                photoMetadata = place.getPhotoMetadatas().get(2);
+//            }
+//
+//            // Get the attribution text.
+//            String attributions = photoMetadata.getAttributions();
+//
+//            // Create a FetchPhotoRequest.
+//            FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+//                    .setMaxWidth(600)
+//                    .setMaxHeight(600)
+//                    .build();
+//            placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
+//                Bitmap bitmap = fetchPhotoResponse.getBitmap();
+//                ImageView image = findViewById(R.id.archImage);
+//                image.setImageBitmap(bitmap);
+//            }).addOnFailureListener((exception) -> {
+//                if (exception instanceof ApiException) {
+//                    ApiException apiException = (ApiException) exception;
+//                    int statusCode = apiException.getStatusCode();
+//                    // Handle error with given status code.
+//                    Log.e(TAG, "Place not found: " + exception.getMessage());
+//                }
+//            });
+//        });
+//    }
 
     @Override
     public void onTaskDone(Object... values) {

@@ -2,6 +2,7 @@ package com.example.positivebirmingham;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +11,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.example.positivebirmingham.MapsActivity.tabLayout;
+
 
 /**
  * A fragment representing a list of Items.
@@ -22,6 +29,11 @@ public class ListFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+
+    private static final String KEY_RECYCLER_STATE = "recycler_state";
+    private RecyclerView recyclerView;
+    private static Bundle mBundleRecyclerViewState;
+    private Parcelable recyclerViewState;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -46,23 +58,74 @@ public class ListFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+        //setRetainInstance(true);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // Save list state
+       // mListState = mLayoutManager.onSaveInstanceState();
+     //   outstate.putParcelable(KEY_RECYCLER_STATE, mListState);
+
+        // save RecyclerView state
+      //  mBundleRecyclerViewState = new Bundle();
+        recyclerViewState = recyclerView.getLayoutManager().onSaveInstanceState();
+        if (recyclerView.getLayoutManager().onSaveInstanceState() != null ){
+        Log.i("Wotzit", "hey");}
+        outState.putParcelable(KEY_RECYCLER_STATE, recyclerViewState);
+        super.onSaveInstanceState(outState);
+      //  outState.putParcelable("KeyForLayoutManagerState", LinearLayoutManagerInstance.onSaveInstanceState());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_item_list, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+        View view = inflater.inflate(R.layout.fragment_item_list, container, false);
+        recyclerView = view.findViewById(R.id.recycler_view);
+
+        if (savedInstanceState != null) {
+            //recyclerViewState = savedInstanceState.getParcelable(KEY_RECYCLER_STATE);
+            //recyclerView.getLayoutManager().onRestoreInstanceState(recyclerViewState);
+            recyclerViewState = savedInstanceState.getParcelable(KEY_RECYCLER_STATE);
+            recyclerView.getLayoutManager().onRestoreInstanceState(recyclerViewState);
+            if (recyclerView != null) {
             }
+            recyclerView = (RecyclerView) view;
             recyclerView.setAdapter(new MyItemRecyclerViewAdapter(Architecture.ITEMS, mListener));
+          //  return recyclerView;
+
+            //   Parcelable state = savedInstanceState.getParcelable("KeyForLayoutManagerState");
+            //  linearLayoutManagerInstance.onRestoreInstanceState(state);
+        } else {
+
+
+            // Set the adapter
+            if (view instanceof RecyclerView) {
+                Context context = view.getContext();
+                //  if (recyclerView == null) {
+                recyclerView = (RecyclerView) view;
+                //}
+                if (mColumnCount <= 1) {
+                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                } else {
+                    recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+                }
+                // recyclerView.setAdapter(new MyItemRecyclerViewAdapter(Architecture.ITEMS, mListener));
+                Architecture architecture = Architecture.getInstance(getContext());
+                //architecture.setUpArchitectureItems();
+                List<Architecture.ArchitectureItem> blah = new ArrayList<Architecture.ArchitectureItem>();
+                List<Architecture.ArchitectureItem> bleh = new ArrayList<Architecture.ArchitectureItem>();
+                List<Architecture.ArchitectureItem> bluh = new ArrayList<Architecture.ArchitectureItem>();
+                blah = Architecture.getITEMS();
+                bleh = architecture.getITEMS();
+                bluh = Architecture.ITEMS;
+
+                recyclerView.setAdapter(new MyItemRecyclerViewAdapter(Architecture.ITEMS, mListener));
+                Log.i("hug", String.valueOf(blah.size()));
+                Log.i("hugo", String.valueOf(bleh.size()));
+                Log.i("hugos", String.valueOf(bluh.size()));
+            }
         }
         return view;
     }

@@ -2,5 +2,34 @@ Birmingham Museum & Art Gallery,ChIJo0dMkYy8cEgRRJR-gJ-142Y
 St. Philip's Cathedral,ChIJyZhgKIy8cEgRb68F_0J9zwQ
 Birmingham Magistrates' Court,ChIJ9Tph9Y-8cEgR_xGrGNA_ZTA
 Great Western Arcade,ChIJDZiQ9468cEgR1XmYBKwQ5vI
-The Cube,ChIJp194avW8cEgRvtk7kA6R890
+The Cube,ChIJVVWVQfW8cEgR-QD0IhVeaoQ
 Library of Birmingham,ChIJzbhBevO8cEgRsizctkhHvG0
+Millennium Point Car Park,ChIJjfxbOYO8cEgR1uIwBHlCCgc
+Victoria Square,ChIJyztffIu8cEgRe_pT2JyNjYc
+Hyatt Regency Birmingham,ChIJEUfiZvS8cEgRzU-BF4xMHkQ
+Millennium Point,ChIJUcPMcYO8cEgRRii8TU3Z5Po
+Birmingham City Council,ChIJJSybZoy8cEgRxFZ5Mb4LqWs
+Birmingham Moor Street,ChIJTYhrqBi9cEgRPmMp9Ucvqx0
+Birmingham Methodist Central Hall,ChIJf81ItWS9cEgRgxxhvMP1RCo
+Blakesley Hall Museum,ChIJteBbIl-6cEgRXhZ6W9nTXCE
+Aston Hall,ChIJHxQRd6i8cEgRyJzQLl3B10g
+Perrott's Folly,ChIJgTmAGgC9cEgR1apbl6JUfBQ
+Birmingham Town Hall,ChIJk-zSjIy8cEgRVbVFIwduMTc
+Selly Manor,ChIJq6p_owfHJIgRC0rlSaA7flc
+The Old Crown,ChIJfa0_eoC8cEgR-aHYI6Nfidc
+Birmingham Back to Back,ChIJ4TKseGK8cEgREn_MweEXxyA
+Hall of Memory,ChIJP0P5XvO8cEgRSLUuI7iOBxE
+Sarehole Mill Museum,ChIJGRXhqOG7cEgRgwrYVuFTv8g
+Highbury Hall,ChIJWeXK9Re8cEgRAJbVRSCeGbA
+Royal Birmingham Conservatoire,ChIJ3YJ_VYu8cEgRQaSXhi5I4gs
+Rotunda,ChIJawZj4oi8cEgRmlMwGJqo81A
+Grand Central,ChIJTaMcWIm8cEgR4vbQGVg7RvM
+Chamberlain Clock,ChIJuUKLf-68cEgR7LAG-obNvds
+St. Paul's Church,ChIJdyVTSu28cEgRJuHktarb3hI
+Saint Martin in the Bull Ring,ChIJGbeOjoi8cEgR1k7FRwPEt9o
+The International Convention Centre,ChIJk-zSjIy8cEgRb6g3gjSAOOo
+Symphony Hall,ChIJk-zSjIy8cEgRJZqgu9tLQKI
+Mailbox Birmingham,ChIJnZVz2oq8cEgRGd4Tz3taGKc
+The Old Joint Stock Pub & Theatre,ChIJtX9rIYy8cEgRqSOlmsDfv74
+Birmingham School of Art,ChIJ1Qca8Yy8cEgRVa3PzYxXILM
+Bullring,ChIJgTmisIi8cEgRUGnpwrypSC8

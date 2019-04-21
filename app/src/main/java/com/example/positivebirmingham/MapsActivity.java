@@ -3,14 +3,20 @@ package com.example.positivebirmingham;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
@@ -26,10 +32,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
@@ -38,7 +47,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+
+import static com.android.volley.VolleyLog.TAG;
 //52.486992, -1.890255
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, TaskLoadedCallback,
@@ -54,6 +67,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int LOCATION_REQUEST_CODE = 101;
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
+    private final String LIST_FRAGMENT_TAG = "list_fragment_tag";
+    private final String SUPPORT_FRAGMENT_TAG = "support_fragment_tag";
+    private final String KEY_TAB_INDEX = "tab_index";
+    private static final String KEY_MARKERS_ARRAYLIST ="markers_arraylist";
+
 
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
@@ -64,12 +82,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public ListFragment listFragment;
     public SupportMapFragment supportMapFragment;
 
+    public static ArrayList<String> theDistance = new ArrayList<>();
+
+    public static HashMap<String, Bitmap> markerHashmap = new HashMap<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
+
+            supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentByTag(SUPPORT_FRAGMENT_TAG);
+            listFragment = (ListFragment) getSupportFragmentManager().findFragmentByTag(LIST_FRAGMENT_TAG);
+
             currentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
             mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
+            //markersList = savedInstanceState.getParcelable(KEY_MARKERS_ARRAYLIST);
+            int tabIndex = savedInstanceState.getInt(KEY_TAB_INDEX);
+
+        }
+        if (supportMapFragment == null) {
+            supportMapFragment = new SupportMapFragment();
+            supportMapFragment.setRetainInstance(true);
+        }
+        if (listFragment == null) {
+        // only create fragment if they haven't been instantiated already
+        listFragment = new ListFragment();
+        listFragment.setRetainInstance(true);
         }
 
         setContentView(R.layout.main_activity);
@@ -84,12 +122,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // related to the map
         //  mapFragment.getMapAsync(this);
 
+    //    supportMapFragment = new SupportMapFragment();
+//        if (listFragment == null ){
+//        listFragment = new ListFragment();}
         getLocationPermission();
-        supportMapFragment = new SupportMapFragment();
-        listFragment = new ListFragment();
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        fetchLastLocation();
         setupTabLayout();
     }
 
@@ -101,6 +137,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (mMap != null) {
             outState.putParcelable(KEY_CAMERA_POSITION, mMap.getCameraPosition());
             outState.putParcelable(KEY_LOCATION, currentLocation);
+            outState.putInt(KEY_TAB_INDEX, tabLayout.getSelectedTabPosition());
+//            outState.putParcelable(KEY_MARKERS_ARRAYLIST, (Parcelable) markersList);
             super.onSaveInstanceState(outState);
         }
     }
@@ -123,7 +161,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 onTabTapped(tab.getPosition());
             }
         });
-        tabLayout.getTabAt(0).select();
+        if (tabLayout.isPressed() == false ){
+        tabLayout.getTabAt(0).select();}
     }
 
     private void onTabTapped(int position) {
@@ -141,7 +180,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         FragmentManager fragmentManager = getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.addToBackStack(null);
-        transaction.replace(R.id.fragment_content, fragment);
+        if (fragment == listFragment){
+            Log.i("imalist","y");
+        transaction.replace(R.id.fragment_content, fragment, LIST_FRAGMENT_TAG);}
+        else if (fragment == supportMapFragment) {
+            Log.i("imalist","yNU");
+            transaction.replace(R.id.fragment_content, fragment, SUPPORT_FRAGMENT_TAG);
+        }
         transaction.commit();
     }
 
@@ -160,7 +205,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (location != null) {
                         currentLocation = location;
                         Toast.makeText(MapsActivity.this, currentLocation.getLatitude() + " " + currentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
-                        SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+                        supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
                         supportMapFragment.getMapAsync(MapsActivity.this);
                     } else {
                         Toast.makeText(MapsActivity.this, "No Location recorded", Toast.LENGTH_SHORT).show();
@@ -189,6 +234,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     android.Manifest.permission.ACCESS_FINE_LOCATION
             }, LOCATION_REQUEST_CODE);
         }
+        fetchLastLocation();
     }
     /**
      * Prompts the user for permission to use the device location.
@@ -207,10 +253,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //Permission Granted
+                    Log.i("jarvis", "no");
                     fetchLastLocation();
-                } else
-                    Toast.makeText(this, "Location Permission Denied", Toast.LENGTH_SHORT).show();
-                break;
+                } else {
+                    Log.i("jarvis", "yes");
+                    for (int i=0; i < 20; i++) {
+                        Toast.makeText(this, "     Location Permission Denied!\nDefault Location Used - Aston University", Toast.LENGTH_LONG).show();
+                    } Location defaultLocation = new Location("LocationManager.GPS_PROVIDER");
+                    defaultLocation.setLatitude(52.486992);
+                    defaultLocation.setLongitude(-1.890255);
+                    currentLocation = defaultLocation;
+                    supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+                    supportMapFragment.getMapAsync(MapsActivity.this);
+                    break;
+                    //  return;
+                }
         }
     }
 
@@ -228,6 +285,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         //currentPosition = new LatLng(52.486992, -1.890255);
         currentPosition = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+        Log.i("jarvis", currentLocation.getLatitude() + "," + currentLocation.getLongitude());
+        Log.i("jackie", currentPosition.latitude + "," + currentPosition.longitude);
         //MarkerOptions are used to create a new Marker.You can specify location, title etc with MarkerOptions
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(currentPosition)
@@ -235,30 +294,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
+        //Toast.makeText(this, "HI", Toast.LENGTH_SHORT).show();
         //map.animateCamera(CameraUpdateFactory.zoomTo(16), 2000, null);
         //add marker current location and move camera
         //Adding the created the marker on the map
         mMap.addMarker(markerOptions);
         addArchitectureMarkers();
+        //prince();
         mMap.getUiSettings().setZoomControlsEnabled(true);
         //mMap.getUiSettings().setMapToolbarEnabled(False).
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mMap.setMyLocationEnabled(true);
 
+
+//        Log.i("jack", theDistance.get(1));
+//        Log.i("jack", theDistance.get(2));
+//        Log.i("jack", theDistance.get(3));
+//        Log.i("jack", theDistance.get(4));
         mMap.setOnMarkerClickListener(
                 new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
-
                         Log.i("testing", String.valueOf(currentPosition));
                         Log.i("testing", String.valueOf(marker.getPosition()));
                         if (!marker.getPosition().equals(currentPosition)) {
@@ -286,6 +340,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
         );
+        if (theDistance == null) {
+            Log.i("jack", "NULLLL");
+        } else {
+            Log.i("jack", String.valueOf(theDistance.size()));
+            Log.i("jack", "NULLLLNOT");
+        }
+
+        // PointsParser.plspls;
+        Log.i("barbs", String.valueOf(PointsParser.plspls.size()));
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+//            //    ActivityCompat#requestPermissions
+//            ActivityCompat.requestPermissions(this, new String[]{
+//                    android.Manifest.permission.ACCESS_FINE_LOCATION
+//            }, LOCATION_REQUEST_CODE);
+            // here to request the missing permissions, and then overriding
+//            @Override
+//               public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+//        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this, new String[]{
+//                    android.Manifest.permission.ACCESS_FINE_LOCATION
+//            }, LOCATION_REQUEST_CODE);
+//        }
     }
 
     private void addArchitectureMarkers() {
@@ -316,7 +405,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 PlacesClient placesClient = Places.createClient(this);
 
                 // Specify the fields to return.
-                List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG);
+                List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG,
+                        Place.Field.PHOTO_METADATAS);
 
                 // Construct a request object, passing the place ID and fields array.
                 FetchPlaceRequest request = FetchPlaceRequest.builder(placeID, placeFields)
@@ -327,13 +417,72 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.i("TAG", "Place found: " + place.getName());
                     LatLng latlng = place.getLatLng();
 
-                    Marker marker = mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(place.getLatLng().latitude, place.getLatLng().longitude))
-                            .title(architectureName)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
-                    marker.setTag(placeID);
-                    markersList.add(marker);
+                    //Get the photo metadata.
+                    if (place.getPhotoMetadatas() == null) {
+                        Log.i("itsnull", "lolzcop");
+                    } else {
+                        PhotoMetadata photoMetadata = place.getPhotoMetadatas().get(0);
+                        if (place.getName().equals("The Cube")) {
+                            photoMetadata = place.getPhotoMetadatas().get(2);
+                        }
+                        if (place.getName().equals("Millennium Point Car Park")) {
+                            photoMetadata = place.getPhotoMetadatas().get(1);
+                        }
+                        if (place.getName().equals("School of Art")) {
+                            photoMetadata = place.getPhotoMetadatas().get(1);
+                        }
+                        if (place.getName().equals("Saint Martin in the Bull Ring")) {
+                            photoMetadata = place.getPhotoMetadatas().get(2);
+                        }
+                        if (place.getName().equals("Bullring & Grand Central")) {
+                            photoMetadata = place.getPhotoMetadatas().get(1);
+                        }
+                        if (place.getName().equals("Mailbox Birmingham")) {
+                            photoMetadata = place.getPhotoMetadatas().get(2);
+                        }
+                        if (place.getName().equals("The International Convention Centre")) {
+                            photoMetadata = place.getPhotoMetadatas().get(1);
+                        }
+                        if (place.getName().equals("Birmingham Museum & Art Gallery")) {
+                            photoMetadata = place.getPhotoMetadatas().get(2);
+                        }
+                        // Create a FetchPhotoRequest.
+                        FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                                .setMaxWidth(200)
+                                .setMaxHeight(200)
+                                .build();
 
+                        placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
+                            Bitmap bitmap = fetchPhotoResponse.getBitmap();
+
+                            Bitmap bitmapWithBorder = Bitmap.createBitmap(bitmap.getWidth() + 12, bitmap.getHeight()
+                                    + 12, bitmap.getConfig());
+                            Canvas canvas = new Canvas(bitmapWithBorder);
+                            canvas.drawColor(Color.rgb(255, 128, 128));
+                            canvas.drawBitmap(bitmap, 6, 6, null);
+
+                            Marker marker = mMap.addMarker(new MarkerOptions()
+                                    .position(new LatLng(place.getLatLng().latitude, place.getLatLng().longitude))
+                                    .title(architectureName)
+                                    .icon(BitmapDescriptorFactory.fromBitmap(bitmapWithBorder)));
+                            marker.setTag(placeID);
+                            // String url = getUrl(currentPosition, marker.getPosition(), "walking");
+                            //new FetchURL(MapsActivity.this).execute(url, "walking");
+                            markersList.add(marker);
+                            if (bitmap == null){
+                                Log.i("Simran", "nay");
+                            }
+                            markerHashmap.put(marker.getTitle(), bitmap);
+                            Log.i("Simran", bitmap.toString());
+                        }).addOnFailureListener((exception) -> {
+                            if (exception instanceof ApiException) {
+                                ApiException apiException = (ApiException) exception;
+                                int statusCode = apiException.getStatusCode();
+                                // Handle error with given status code.
+                                Log.e(TAG, "Place not found: " + exception.getMessage());
+                            }
+                        });
+                    }
                 }).addOnFailureListener((exception) -> {
                     if (exception instanceof ApiException) {
                         ApiException apiException = (ApiException) exception;
@@ -348,6 +497,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void prince() {
+        for (Marker m : markersList) {
+            String url = getUrl(currentPosition, m.getPosition(), "walking");
+            new FetchURL(getParent()).execute(url, "walking");
         }
     }
 
@@ -369,6 +525,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onTaskDone(Object... values) {
+
+        theDistance.add((String) values[0]);
+
+        if (values[0] != null) {
+            SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
+            supportMapFragment.getMapAsync(MapsActivity.this);
+        }
 
 
 //        if (currentPolyline != null)
@@ -392,10 +555,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onListFragmentInteraction(Architecture.ArchitectureItem item) {
+        Log.i("steg", "3");
         for (Marker m : markersList) {
+            Log.i("steg", "2 "+m.getTitle());
+            Log.i("steghaha", String.valueOf(markersList.size()));
             if (m.getTitle().equals(item.architectureTitle)) {
 
-                Intent intent = new Intent(MapsActivity.this, PopUpInfoWindow.class);
+                Intent intent = new Intent(this, PopUpInfoWindow.class);
+                Log.i("steg", item.architectureTitle);
 
                 Bundle bundle = new Bundle();
                 bundle.putString("MARKER", m.toString());
