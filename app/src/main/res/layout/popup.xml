@@ -7,18 +7,19 @@
     android:layout_gravity="center"
     android:background="@color/colorPrimaryDark"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="10dp">
 
     <ScrollView
         android:id="@+id/scroll"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:fadeScrollbars="false">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="15dp">
 
             <Button
                 android:id="@+id/closePopup"
@@ -26,7 +27,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:gravity="center"
-                android:text="CLOSE" />
+                android:text="@string/close"
+                android:textAlignment="center" />
 
             <!--<TextView-->
             <!--android:id="@+id/txtclose"-->
@@ -46,7 +48,8 @@
                 android:layout_marginTop="5dp"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textAlignment="center"/>
 
             <RatingBar
                 android:id="@+id/ratingBar"
@@ -79,7 +82,8 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:text="ARCHITECTURE info"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:textAlignment="center"/>
 
             <TextView
                 android:id="@+id/txtLink"
@@ -88,18 +92,24 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:autoLink="web"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:textAlignment="center"/>
 
             <Button
                 android:id="@+id/directions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:gravity="center"
                 android:layout_marginTop="15dp"
-                android:background="@android:color/white"
-                android:text="GET DIRECTIONS"
+                android:background="@drawable/button_background"
+                android:text="@string/get_directions"
                 android:textColor="@android:color/holo_red_dark"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textAlignment="center"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp"
+                android:radius="10dp"/>
 
             <!--<Button-->
             <!--android:id="@+id/close_popup"-->

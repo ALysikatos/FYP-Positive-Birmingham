@@ -1,12 +1,15 @@
 package com.example.positivebirmingham;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -15,13 +18,20 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -29,6 +39,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -47,8 +58,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.android.volley.VolleyLog.TAG;
@@ -89,6 +105,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (savedInstanceState != null) {
 
             supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentByTag(SUPPORT_FRAGMENT_TAG);
@@ -111,6 +128,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         setContentView(R.layout.main_activity);
+//        getSupportActionBar().hide();
+//        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+//        setSupportActionBar(myToolbar);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         //Now initialize the SupportMapFragment object from the activity’s layout file using findFragmentById
@@ -161,8 +181,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 onTabTapped(tab.getPosition());
             }
         });
-        if (tabLayout.isPressed() == false ){
-        tabLayout.getTabAt(0).select();}
+        tabLayout.getTabAt(0).select();
+
+//        for(int i=0; i < tabLayout.getTabCount(); i++) {
+//            View tab = ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(i);
+//            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) tab.getLayoutParams();
+//            p.setMargins(0, 0, 50, 0);
+//            tab.requestLayout();
+//        }
+        View root = tabLayout.getChildAt(0);
+        if (root instanceof LinearLayout) {
+            ((LinearLayout) root).setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+            GradientDrawable drawable = new GradientDrawable();
+            drawable.setColorFilter(0xffff0000, PorterDuff.Mode.MULTIPLY );
+           // drawable.setColor(getResources().getColor(R.color.colorAccent));
+            drawable.setSize(2, 1);
+            ((LinearLayout) root).setDividerPadding(10);
+            ((LinearLayout) root).setDividerDrawable(drawable);
+        }
     }
 
     private void onTabTapped(int position) {
@@ -253,13 +289,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //Permission Granted
-                    Log.i("jarvis", "no");
                     fetchLastLocation();
                 } else {
-                    Log.i("jarvis", "yes");
-                    for (int i=0; i < 20; i++) {
-                        Toast.makeText(this, "     Location Permission Denied!\nDefault Location Used - Aston University", Toast.LENGTH_LONG).show();
-                    } Location defaultLocation = new Location("LocationManager.GPS_PROVIDER");
+                    AlertDialog alertDialog = new AlertDialog.Builder(MapsActivity.this).create();
+                    alertDialog.setTitle("   Location Permission Denied!");
+                    alertDialog.setMessage("\nDefault Birmingham Location Used:\n                  Aston University");
+                    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    alertDialog.show();
+
+              //      Toast.makeText(this, "     Location Permission Denied!\nDefault Location Used - Aston University", Toast.LENGTH_LONG).show();
+                    Location defaultLocation = new Location("LocationManager.GPS_PROVIDER");
                     defaultLocation.setLatitude(52.486992);
                     defaultLocation.setLongitude(-1.890255);
                     currentLocation = defaultLocation;
@@ -293,7 +337,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .title("You are Here")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
         //Toast.makeText(this, "HI", Toast.LENGTH_SHORT).show();
         //map.animateCamera(CameraUpdateFactory.zoomTo(16), 2000, null);
         //add marker current location and move camera
@@ -347,8 +390,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.i("jack", "NULLLLNOT");
         }
 
-        // PointsParser.plspls;
-        Log.i("barbs", String.valueOf(PointsParser.plspls.size()));
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
 //            //    ActivityCompat#requestPermissions
@@ -375,6 +416,59 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                    android.Manifest.permission.ACCESS_FINE_LOCATION
 //            }, LOCATION_REQUEST_CODE);
 //        }
+    }
+
+    private void setCameraPosition(GoogleMap mMap, ArrayList<Marker> markersList) {
+        float[] distance = new float[1];
+        HashMap<Marker, Float> distanceList = new HashMap<>();
+
+        if (markersList == null) {
+            Log.i("greece", "f");
+        }
+        Log.i("greece", String.valueOf(MapsActivity.markersList.size()));
+        for (Marker m : markersList) {
+
+            Location.distanceBetween(currentPosition.latitude, currentPosition.longitude,
+                    m.getPosition().latitude, m.getPosition().longitude, distance);
+            distanceList.put(m, distance[0]);
+        }
+        Log.i("greec", String.valueOf(distanceList.size()));
+
+
+        List<Map.Entry<Marker, Float>> list = new LinkedList<>(distanceList.entrySet());
+
+        Collections.sort(list, new Comparator<Map.Entry<Marker, Float> >() {
+            public int compare(Map.Entry<Marker, Float> o1,
+                               Map.Entry<Marker, Float> o2)
+            {
+                return (o1.getValue()).compareTo(o2.getValue());
+            }
+        });
+
+        Log.i("gree", String.valueOf(list.size()));
+
+        Marker nearestMarker1 = list.get(0).getKey();
+        Marker nearestMarker2 = list.get(1).getKey();
+        Marker nearestMarker3 = list.get(2).getKey();
+        //Marker nearestMarker4 = list.get(3).getKey();
+
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        builder.include(nearestMarker1.getPosition());
+        builder.include(nearestMarker2.getPosition());
+        builder.include(nearestMarker3.getPosition());
+     //   builder.include(nearestMarker4.getPosition());
+
+        builder.include(currentPosition);
+
+        LatLngBounds bounds = builder.build();
+
+
+        int width = getResources().getDisplayMetrics().widthPixels;
+        int height = getResources().getDisplayMetrics().heightPixels;
+        int padding = (int) (width * 0.10);
+
+        //int padding = 0; // offset from edges of the map in pixels
+        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding));
     }
 
     private void addArchitectureMarkers() {
@@ -474,6 +568,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                             markerHashmap.put(marker.getTitle(), bitmap);
                             Log.i("Simran", bitmap.toString());
+                            if (markersList.size() ==34){
+                                setCameraPosition(mMap, markersList);
+                            }
                         }).addOnFailureListener((exception) -> {
                             if (exception instanceof ApiException) {
                                 ApiException apiException = (ApiException) exception;
@@ -493,6 +590,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 });
             }
             reader.close();
+            Log.i("greecejs", String.valueOf(markersList.size()));
         } catch (NullPointerException e) {
             e.printStackTrace();
         } catch (Exception e) {

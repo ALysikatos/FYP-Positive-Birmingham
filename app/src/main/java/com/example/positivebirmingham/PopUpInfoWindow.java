@@ -125,7 +125,7 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
 
     public void getPlaceInfo() {
         // Initialize Places.
-       //Places.initialize(getApplicationContext(), getString(R.string.google_directions_key));
+       Places.initialize(getApplicationContext(), getString(R.string.google_directions_key));
 
 // Create a new Places client instance.
         PlacesClient placesClient = Places.createClient(this);
