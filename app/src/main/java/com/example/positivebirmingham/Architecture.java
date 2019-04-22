@@ -25,6 +25,8 @@ import static com.android.volley.VolleyLog.TAG;
 import static com.example.positivebirmingham.MapsActivity.currentPosition;
 import static com.example.positivebirmingham.MapsActivity.markerHashmap;
 import static com.example.positivebirmingham.MapsActivity.markersList;
+import static com.example.positivebirmingham.PointsParser.distanceList;
+import static com.example.positivebirmingham.PointsParser.durationList;
 
 //The Singleton's purpose is to control object creation, limiting the number of objects to only one.
 
@@ -56,18 +58,21 @@ public class Architecture extends Activity {
     }
 
     public void setUpArchitectureItems() {
+        int counter = 0;
+
         for (Marker m : markersList) {
-            float[] distance = new float[1];
-            Location.distanceBetween(currentPosition.latitude, currentPosition.longitude,
-                    m.getPosition().latitude, m.getPosition().longitude, distance);
+                Log.i("yaya", "count " +counter + "array " + distanceList.size() + " " + markersList.size() + "dur"+durationList.size());
+                float[] distance = new float[1];
+                Location.distanceBetween(currentPosition.latitude, currentPosition.longitude,
+                        m.getPosition().latitude, m.getPosition().longitude, distance);
+                Bitmap markerBitmap = markerHashmap.get(m.getTitle());
+                markerBitmap = Bitmap.createScaledBitmap(markerBitmap,(int)(markerBitmap.getWidth()*3), (int)(markerBitmap.getHeight()*3), true);
 
-            Bitmap markerBitmap = markerHashmap.get(m.getTitle());
-            markerBitmap = Bitmap.createScaledBitmap(markerBitmap,(int)(markerBitmap.getWidth()*3), (int)(markerBitmap.getHeight()*3), true);
-
-            ITEMS.add(new ArchitectureItem(m.getTitle(), distance[0], markerBitmap));
-        }
+                ITEMS.add(new ArchitectureItem(m.getTitle(), distanceList.get(counter), durationList.get(counter), markerBitmap));
+                counter++;
+            }
         Collections.sort(ITEMS, (o1, o2) -> o1.getArchitectureDistance().compareTo(o2.getArchitectureDistance()));
-    }
+        }
 
     /**
      * An architecture item representing a piece of content.
@@ -75,15 +80,18 @@ public class Architecture extends Activity {
     public static class ArchitectureItem {
         public final String architectureTitle;
         public final Float architectureDistance;
+        public final String architectureDuration;
         public final Bitmap architectureImage;
 
         public Float getArchitectureDistance() {
             return architectureDistance;
         }
 
-        public ArchitectureItem(String architectureTitle, Float architectureDistance, Bitmap architectureImage) {
+        public ArchitectureItem(String architectureTitle, Float architectureDistance, String
+                                architectureDuration, Bitmap architectureImage) {
             this.architectureTitle = architectureTitle;
             this.architectureDistance = architectureDistance;
+            this.architectureDuration = architectureDuration;
             this.architectureImage = architectureImage;
         }
     }

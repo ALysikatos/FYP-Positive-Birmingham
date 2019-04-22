@@ -335,7 +335,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(currentPosition)
                 .title("You are Here")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         //Toast.makeText(this, "HI", Toast.LENGTH_SHORT).show();
         //map.animateCamera(CameraUpdateFactory.zoomTo(16), 2000, null);
@@ -560,8 +560,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     .title(architectureName)
                                     .icon(BitmapDescriptorFactory.fromBitmap(bitmapWithBorder)));
                             marker.setTag(placeID);
-                            // String url = getUrl(currentPosition, marker.getPosition(), "walking");
-                            //new FetchURL(MapsActivity.this).execute(url, "walking");
+                            String url = getUrl(currentPosition, marker.getPosition(), "walking");
+                            new FetchURL(MapsActivity.this).execute(url, "walking");
                             markersList.add(marker);
                             if (bitmap == null){
                                 Log.i("Simran", "nay");

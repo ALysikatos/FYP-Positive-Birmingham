@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -82,7 +83,7 @@ public class ListFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
-        recyclerView = view.findViewById(R.id.recycler_view);
+        //recyclerView = view.findViewById(R.id.recycler_view);
 
         if (savedInstanceState != null) {
             //recyclerViewState = savedInstanceState.getParcelable(KEY_RECYCLER_STATE);
@@ -105,6 +106,8 @@ public class ListFragment extends Fragment {
                 Context context = view.getContext();
                 //  if (recyclerView == null) {
                 recyclerView = (RecyclerView) view;
+                recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
+                        DividerItemDecoration.VERTICAL));
                 //}
                 if (mColumnCount <= 1) {
                     recyclerView.setLayoutManager(new LinearLayoutManager(context));

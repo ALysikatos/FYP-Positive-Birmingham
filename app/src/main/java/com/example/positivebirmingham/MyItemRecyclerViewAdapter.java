@@ -56,6 +56,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.mImageView.getLayoutParams().height = 300;
         holder.mImageView.getLayoutParams().width = 300;
         holder.mImageView.setImageBitmap(mValues.get(position).architectureImage);
+        holder.mDurationView.setText(mValues.get(position).architectureDuration + " walk away");
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,6 +84,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public Architecture.ArchitectureItem mItem;
         public final TextView mDistanceView;
         public final ImageView mImageView;
+        public final TextView mDurationView;
 
         public ViewHolder(View view) {
             super(view);
@@ -91,6 +93,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             mTitleView = (TextView) view.findViewById(R.id.title);
             mDistanceView = (TextView) view.findViewById(R.id.distance);
             mImageView = (ImageView) view.findViewById(R.id.architectureImage);
+            mDurationView = (TextView) view.findViewById(R.id.duration);
         }
 
         @Override

@@ -16,9 +16,11 @@ import java.util.List;
 
 public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
 
-    public static ArrayList<String> plspls = new ArrayList<>();
+    public static ArrayList<Float> distanceList = new ArrayList<>();
+    public static ArrayList<String> durationList = new ArrayList<>();
     TaskLoadedCallback taskCallback;
     String directionMode = "walking";
+    private static int x =0;
 
     public PointsParser(Context mContext, String directionMode) {
         this.taskCallback = (TaskLoadedCallback) mContext;
@@ -87,7 +89,7 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
             lineOptions.addAll(points);
             if (directionMode.equalsIgnoreCase("walking")) {
                 lineOptions.width(10);
-                lineOptions.color(Color.MAGENTA);
+                lineOptions.color(Color.BLUE);
             } else {
                 lineOptions.width(20);
                 lineOptions.color(Color.BLUE);
@@ -97,6 +99,18 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
 
         // Drawing polyline in the Google Map for the i-th route
         if (lineOptions != null) {
+            x++;
+            Log.i("nemo", "x is " + x);
+            if (x<=35) {
+                distanceList.add(Float.parseFloat(distance.substring(0,3)));
+                Log.i("tipsy", distance);
+                Log.i("tipsyee", String.valueOf(distanceList.size()));
+//                if (duration.contains("hour")) {
+//                    duration = ""
+//                }
+                durationList.add(duration);
+                return;
+            }
     //            taskCallback.onTaskDone(lineOptions,distance,duration);
            // taskCallback.onTaskDone(distance);
            // MapsActivity.theDistance.add(distance);
