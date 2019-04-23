@@ -1,9 +1,11 @@
 package com.example.positivebirmingham;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -106,9 +108,11 @@ public class ListFragment extends Fragment {
                 Context context = view.getContext();
                 //  if (recyclerView == null) {
                 recyclerView = (RecyclerView) view;
-                recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
-                        DividerItemDecoration.VERTICAL));
-                //}
+
+                DividerItemDecoration itemDecorator = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
+                itemDecorator.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider));
+                recyclerView.addItemDecoration(itemDecorator);
+
                 if (mColumnCount <= 1) {
                     recyclerView.setLayoutManager(new LinearLayoutManager(context));
                 } else {

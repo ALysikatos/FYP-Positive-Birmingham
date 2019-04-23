@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/search_not_found"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:text="@string/search_not_found"
+        android:textAlignment="center"
+        android:textAppearance="@style/TabLayoutTextStyle"
+        android:background="#e30000"
+        android:textColor="#FFF"
+        android:textSize="27sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="10dp"/>
+
+</LinearLayout>

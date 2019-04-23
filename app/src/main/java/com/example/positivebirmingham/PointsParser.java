@@ -4,15 +4,26 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.example.positivebirmingham.MapsActivity.mOverlayDialog;
+import static com.example.positivebirmingham.MapsActivity.overlay;
+import static com.example.positivebirmingham.MapsActivity.progressBar;
+import static com.example.positivebirmingham.MapsActivity.progressBarDialog;
+import static com.example.positivebirmingham.MapsActivity.progressBarLayout;
+import static com.example.positivebirmingham.MapsActivity.progressBarText;
 
 public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
 
@@ -21,6 +32,7 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
     TaskLoadedCallback taskCallback;
     String directionMode = "walking";
     private static int x =0;
+    private Double miles;
 
     public PointsParser(Context mContext, String directionMode) {
         this.taskCallback = (TaskLoadedCallback) mContext;
@@ -101,14 +113,18 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
         if (lineOptions != null) {
             x++;
             Log.i("nemo", "x is " + x);
+            Float distanceInMiles = Float.parseFloat(distance.substring(0,3));
+            miles =  distanceInMiles.doubleValue() * 0.62137;
+            DecimalFormat df = new DecimalFormat("0.00");
+            miles = Double.valueOf(df.format(miles));
             if (x<=35) {
-                distanceList.add(Float.parseFloat(distance.substring(0,3)));
-                Log.i("tipsy", distance);
-                Log.i("tipsyee", String.valueOf(distanceList.size()));
-//                if (duration.contains("hour")) {
-//                    duration = ""
-//                }
+              //  distance = distance.substring(0,3);
+
+                distanceList.add(miles.floatValue());
                 durationList.add(duration);
+                if (x==35) {
+                     overlay.dismiss();
+                }
                 return;
             }
     //            taskCallback.onTaskDone(lineOptions,distance,duration);
@@ -116,19 +132,11 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
            // MapsActivity.theDistance.add(distance);
             //Log.i("tipsy", String.valueOf(MapsActivity.theDistance.size()));
 
-
-
-            //            ArrayList<String> x = new ArrayList<>();
-//            x.add(distance);
-//            Log.i("tipsy", distance);
-           // Log.i("tipsy1", x.get(0));
-           // Log.i("tipsy2", x.get(2));
-
             if (MapsActivity.currentPolyline != null)
                 MapsActivity.currentPolyline.remove();
             MapsActivity.currentPolyline = MapsActivity.mMap.addPolyline(lineOptions);
 
-            String theSnippet = "Distance: " + distance + ", " + duration + " walk";
+            String theSnippet = "Distance: " + miles + " miles, " + duration + " walk";
             if (MapsActivity.destinationMarker != null) {
                 MapsActivity.destinationMarker.setSnippet(theSnippet);
                 MapsActivity.destinationMarker.showInfoWindow();

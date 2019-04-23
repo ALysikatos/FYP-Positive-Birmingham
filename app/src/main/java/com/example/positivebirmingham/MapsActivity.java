@@ -1,6 +1,7 @@
 package com.example.positivebirmingham;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,9 +24,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
@@ -102,6 +109,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public static HashMap<String, Bitmap> markerHashmap = new HashMap<>();
 
+    private int progress = 0;
+    public static ProgressBar progressBar;
+    public static TextView progressBarText;
+    public static LinearLayout progressBarLayout;
+    public static Dialog mOverlayDialog;
+    public static AlertDialog overlay;
+    public static Dialog progressBarDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,6 +143,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         setContentView(R.layout.main_activity);
+        Button searchButton = this.findViewById(R.id.search_button);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSearchRequested();
+            }
+        });
+
 //        getSupportActionBar().hide();
 //        Toolbar myToolbar = findViewById(R.id.my_toolbar);
 //        setSupportActionBar(myToolbar);
@@ -182,6 +205,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
         tabLayout.getTabAt(0).select();
+//        TextView newTab = (TextView) LayoutInflater.from(this).inflate(R.id.list_view_tab, null);
+//        newTab.setText("tab1"); //tab label txt
+//        newTab.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_list_white, 0, 0, 0);
+//        tabLayout.getTabAt(1).setCustomView(newTab);
 
 //        for(int i=0; i < tabLayout.getTabCount(); i++) {
 //            View tab = ((ViewGroup) tabLayout.getChildAt(0)).getChildAt(i);
@@ -335,7 +362,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(currentPosition)
                 .title("You are Here")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         //Toast.makeText(this, "HI", Toast.LENGTH_SHORT).show();
         //map.animateCamera(CameraUpdateFactory.zoomTo(16), 2000, null);
@@ -389,6 +416,54 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.i("jack", String.valueOf(theDistance.size()));
             Log.i("jack", "NULLLLNOT");
         }
+       // startProgressBar();
+
+       // progressBar = findViewById(R.id.progress_bar);
+       // progressBarLayout = findViewById(R.id.activity_main);
+
+//        Dialog mOverlayDialog = new Dialog(this, android.R.style.Theme_Panel); //display an invisible overlay dialog to prevent user interaction and pressing back
+//        mOverlayDialog.setCancelable(false);
+//        mOverlayDialog.setTitle("hELPPPPP");
+//        mOverlayDialog.show();
+//        Log.i("japp",mOverlayDialog.toString());
+
+//        overlay = new AlertDialog.Builder(this).create();
+//        overlay.setCancelable(false);
+//        overlay.setTitle("Loading");
+//
+//        overlay.setMessage("Calculating Distances...");
+//        progressBarText = findViewById(R.id.progress_bar_text);
+//      //  progressBar.getParent().removeView
+//
+//        if(progressBar.getParent() != null) {
+//            ((ViewGroup)progressBar.getParent()).removeView(progressBar); // <- fix
+//        }
+//        if(progressBarText.getParent() != null) {
+//            ((ViewGroup)progressBarText.getParent()).removeView(progressBarText); // <- fix
+//        }
+//      //  layout.addView(tv);
+//        progressBar.setVisibility(View.VISIBLE);
+//        overlay.setView(progressBar);
+//        TableLayout.LayoutParams tlp = new TableLayout.LayoutParams(
+//                TableLayout.LayoutParams.WRAP_CONTENT,
+//                TableLayout.LayoutParams.WRAP_CONTENT);
+//
+//        overlay.addContentView(progressBarText, tlp);
+//        overlay.show();
+
+
+        overlay = new AlertDialog.Builder(this).create();
+        overlay.setCancelable(false);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.progress_bar_dialog, null);
+        overlay.setView(dialogView);
+        overlay.show();
+//
+//        progressBarDialog = new Dialog(this);
+//        progressBarDialog.setCancelable(false);
+//        progressBarDialog.setContentView(R.layout.progress_bar_dialog);
+//        progressBarDialog.show();
+
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -406,6 +481,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         mMap.setMyLocationEnabled(true);
     }
+
+    private void setProgressValue(final int progress) {
+
+        // set the progress
+        progressBar.setProgress(progress);
+        // thread is used to change the progress value
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                setProgressValue(progress + 20);
+            }
+        });
+        thread.start();
+    }
+
+
+//    private void startProgressBar(){
+//        ProgressBar progressBar;
+//        int progressStatus = 0;
+//
+//        ProgressBar progressBar = findViewById(R.id.progress_bar);
+//
+//        Thread thread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (progressBar.getProgress() < 100) {
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                progressBar.setProgress(progressStatus+=10);
+//                    progressStatus+=1;
+//                setProgressValue(progress + 10);
+//            }}
+//        });
+//        thread.start();
+//    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {

@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!--style="@style/Widget.AppCompat.ProgressBar.Horizontal"-->
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -25,13 +27,28 @@
             android:textAppearance="@style/TabLayoutTextStyle"
             android:textColor="#000000"
             android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/search_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:gravity="center"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:text="@string/search"
+            android:drawableEnd="@drawable/ic_search"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"/>
     </android.support.v7.widget.Toolbar>
 
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="62dp"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         app:tabGravity="fill"
@@ -39,19 +56,23 @@
         app:tabMode="fixed"
         app:tabSelectedTextColor="#ff9999"
         app:tabTextAppearance="@style/TabLayoutTextStyle"
-        app:tabTextColor="#FFF">
+        app:tabTextColor="#FFF"
+        >
 
         <android.support.design.widget.TabItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/tab1"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:icon="@drawable/ic_person_pin_white"/>
 
         <android.support.design.widget.TabItem
+            android:id="@+id/list_view_tab"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/tab2"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:icon="@drawable/ic_list_white" />
 
     </android.support.design.widget.TabLayout>
 

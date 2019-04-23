@@ -55,10 +55,23 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data android:name="android.app.default_searchable"
+                android:value="com.example.positivebirmingham.SearchDialogActivity" />
+
         </activity>
         <activity android:name="com.example.positivebirmingham.PopUpInfoWindow"
             android:configChanges="orientation|screenSize"
             android:theme="@style/Theme.AppCompat.Dialog.Alert"/>
+        <activity android:name="com.example.positivebirmingham.SearchDialogActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName="com.example.positivebirmingham.MapsActivity"
+            android:theme="@style/Theme.Transparent">
+        <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/search_dialog"/>
+        </activity>
     </application>
 
 </manifest>

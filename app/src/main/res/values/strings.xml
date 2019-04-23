@@ -9,4 +9,10 @@
     <string name="close">CLOSE</string>
     <string name="get_directions">GET DIRECTIONS</string>
     <string name="positive_birmingham">Positive Birmingham</string>
+    <string name="progress_bar_title">Welcome to Positive Birmingham!</string>
+    <string name="progress_bar_text">Calculating Architecture Distances&#8230;</string>
+    <string name="search_hint">Search Architecture here</string>
+    <string name="search">&#160;Search&#160;</string>
+    <string name="search_not_found">Architecture Not Found</string>
+
 </resources>

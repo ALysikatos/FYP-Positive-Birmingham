@@ -6,8 +6,9 @@
     android:name="com.example.positivebirmingham.ListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp"
     app:layoutManager="LinearLayoutManager"
     tools:context=".ListFragment"
-    tools:listitem="@layout/fragment_item" />
+    tools:listitem="@layout/fragment_item"
+    android:background="#E8E8E8"/>

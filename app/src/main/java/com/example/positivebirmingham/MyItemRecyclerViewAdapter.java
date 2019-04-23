@@ -52,11 +52,11 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         }
        holder.mTitleView.setText(mValues.get(position).architectureTitle);
 
-        holder.mDistanceView.setText(String.valueOf(mValues.get(position).architectureDistance));
+        holder.mDistanceView.setText(String.valueOf(mValues.get(position).architectureDistance) + " miles away");
         holder.mImageView.getLayoutParams().height = 300;
         holder.mImageView.getLayoutParams().width = 300;
         holder.mImageView.setImageBitmap(mValues.get(position).architectureImage);
-        holder.mDurationView.setText(mValues.get(position).architectureDuration + " walk away");
+        holder.mDurationView.setText(mValues.get(position).architectureDuration + " walk");
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override

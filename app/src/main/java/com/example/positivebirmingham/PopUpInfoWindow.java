@@ -106,9 +106,13 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
         Button getDirections = findViewById(R.id.directions);
         getDirections.setOnClickListener(v -> {
             String url = getUrl(currentPosition, markerPosition, "walking");
+            Log.i("kol", String.valueOf(getParent()));
             new FetchURL(getParent()).execute(url, "walking");
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationMarker.getPosition(), 16));
-            tabLayout.getTabAt(0).select();
+
+            if (tabLayout.getSelectedTabPosition() == 1){
+                tabLayout.getTabAt(0).select();
+            }
             finish();
         });
 //        TextView txtclose = findViewById(R.id.txtclose);
