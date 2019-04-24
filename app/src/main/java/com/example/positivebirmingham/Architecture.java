@@ -68,7 +68,7 @@ public class Architecture extends Activity {
                 Bitmap markerBitmap = markerHashmap.get(m.getTitle());
                 markerBitmap = Bitmap.createScaledBitmap(markerBitmap,(int)(markerBitmap.getWidth()*3), (int)(markerBitmap.getHeight()*3), true);
 
-                ITEMS.add(new ArchitectureItem(m.getTitle(), distanceList.get(counter), durationList.get(counter), markerBitmap));
+                ITEMS.add(new ArchitectureItem(m.getTitle(), distanceList.get(counter), durationList.get(counter), markerBitmap, MapsActivity.architectureStyleHashmap.get(m.getTitle())));
                 counter++;
             }
         Collections.sort(ITEMS, (o1, o2) -> o1.getArchitectureDistance().compareTo(o2.getArchitectureDistance()));
@@ -82,17 +82,19 @@ public class Architecture extends Activity {
         public final Float architectureDistance;
         public final String architectureDuration;
         public final Bitmap architectureImage;
+        public final String architectureSnippet;
 
         public Float getArchitectureDistance() {
             return architectureDistance;
         }
 
         public ArchitectureItem(String architectureTitle, Float architectureDistance, String
-                                architectureDuration, Bitmap architectureImage) {
+                                architectureDuration, Bitmap architectureImage, String architectureSnippet) {
             this.architectureTitle = architectureTitle;
             this.architectureDistance = architectureDistance;
             this.architectureDuration = architectureDuration;
             this.architectureImage = architectureImage;
+            this.architectureSnippet = architectureSnippet;
         }
     }
 }

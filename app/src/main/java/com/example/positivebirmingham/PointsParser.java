@@ -114,8 +114,10 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
             x++;
             Log.i("nemo", "x is " + x);
             Float distanceInMiles = Float.parseFloat(distance.substring(0,3));
+            Log.i("nemo", "di" + distance);
             miles =  distanceInMiles.doubleValue() * 0.62137;
-            DecimalFormat df = new DecimalFormat("0.00");
+            Log.i("nemo", String.valueOf(miles));
+            DecimalFormat df = new DecimalFormat("0.0");
             miles = Double.valueOf(df.format(miles));
             if (x<=35) {
               //  distance = distance.substring(0,3);

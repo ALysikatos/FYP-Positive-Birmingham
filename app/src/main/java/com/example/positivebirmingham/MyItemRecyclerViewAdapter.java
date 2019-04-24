@@ -2,6 +2,7 @@ package com.example.positivebirmingham;
 
 import android.media.Image;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,6 +58,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.mImageView.getLayoutParams().width = 300;
         holder.mImageView.setImageBitmap(mValues.get(position).architectureImage);
         holder.mDurationView.setText(mValues.get(position).architectureDuration + " walk");
+        holder.mSnippetView.setText(Html.fromHtml("<b>Architectural Style:</b> <br />" +mValues.get(position).architectureSnippet));
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,6 +87,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final TextView mDistanceView;
         public final ImageView mImageView;
         public final TextView mDurationView;
+        public final TextView mSnippetView;
 
         public ViewHolder(View view) {
             super(view);
@@ -94,6 +97,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             mDistanceView = (TextView) view.findViewById(R.id.distance);
             mImageView = (ImageView) view.findViewById(R.id.architectureImage);
             mDurationView = (TextView) view.findViewById(R.id.duration);
+            mSnippetView = (TextView) view.findViewById(R.id.snippet);
         }
 
         @Override

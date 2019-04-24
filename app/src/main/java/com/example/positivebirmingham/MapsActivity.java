@@ -108,6 +108,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static ArrayList<String> theDistance = new ArrayList<>();
 
     public static HashMap<String, Bitmap> markerHashmap = new HashMap<>();
+    public static HashMap<String, String> architectureDateHashmap = new HashMap<>();
+    public static HashMap<String, String> architectureInfoHashmap = new HashMap<>();
+    public static HashMap<String, String> architectureStyleHashmap = new HashMap<>();
+    public static HashMap<String, String> architectHashmap= new HashMap<>();
 
     private int progress = 0;
     public static ProgressBar progressBar;
@@ -593,7 +597,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void addArchitectureMarkers() {
         try {
             // Get the text file
-            InputStream file = getResources().openRawResource(R.raw.placeids);
+            InputStream file = getResources().openRawResource(R.raw.architecture);
 
             // check if file is not empty
             // if (file.exists() && file.length() != 0) {
@@ -604,12 +608,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             // read every line of the file into the line-variable, on line at the time
             while ((line = reader.readLine()) != null) {
-                String[] architecture = line.split(",", 2);
+                String[] architecture = line.split(";", 6);
                 System.out.println(architecture[0]);
                 System.out.println(architecture[1]);
 
                 String architectureName = architecture[0];
                 String placeID = architecture[1];
+                String architectureDate = architecture[2];
+                String architectureInfo = architecture[3];
+                String architectureStyle = architecture[4];
+                String architect = architecture[5];
+
+                Log.i("princess", architecture[0] + architecture[2]);
+
+
+
 
                 // Initialize Places.
                 Places.initialize(getApplicationContext(), getString(R.string.google_directions_key));
@@ -686,6 +699,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 Log.i("Simran", "nay");
                             }
                             markerHashmap.put(marker.getTitle(), bitmap);
+                            architectureDateHashmap.put(marker.getTitle(), architectureDate);
+                            architectureInfoHashmap.put(marker.getTitle(), architectureInfo);
+                            architectureStyleHashmap.put(marker.getTitle(), architectureStyle);
+                            architectHashmap.put(marker.getTitle(), architect);
                             Log.i("Simran", bitmap.toString());
                             if (markersList.size() ==34){
                                 setCameraPosition(mMap, markersList);

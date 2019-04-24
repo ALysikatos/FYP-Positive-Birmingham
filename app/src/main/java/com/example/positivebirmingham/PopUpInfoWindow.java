@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
@@ -94,6 +95,18 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
         } else {
             Log.i("Simran", "y");
         }
+
+        TextView architectureDate = findViewById(R.id.txtDate);
+        architectureDate.setText(Html.fromHtml("<b>Year Built:</b> " + MapsActivity.architectureDateHashmap.get(markerTitle)));
+
+        TextView architectureInfo = findViewById(R.id.txtInfo);
+        architectureInfo.setText(MapsActivity.architectureInfoHashmap.get(markerTitle));
+
+        TextView architectureStyle = findViewById(R.id.txtStyle);
+        architectureStyle.setText(Html.fromHtml("<b>Architectural Style:</b> " + MapsActivity.architectureStyleHashmap.get(markerTitle)));
+
+        TextView architects = findViewById(R.id.txtArchitect);
+        architects.setText(Html.fromHtml("<b>Architect:</b> " + MapsActivity.architectHashmap.get(markerTitle)));
 
         Button close = findViewById(R.id.closePopup);
         close.setOnClickListener(new View.OnClickListener() {
