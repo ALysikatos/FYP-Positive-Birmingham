@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.View;
@@ -57,9 +58,9 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
         markerPlaceID = bundle.getString("MARKER_PLACEID");
 
         for (Marker m : markersList) {
-            if (m.getTitle().equals(markerTitle)){
+            if (m.getTitle().equals(markerTitle)) {
                 Bitmap smallBitmap = markerHashmap.get(markerTitle);
-                markerImage = Bitmap.createScaledBitmap(smallBitmap,(int)(smallBitmap.getWidth()*3), (int)(smallBitmap.getHeight()*3), true);
+                markerImage = Bitmap.createScaledBitmap(smallBitmap, (int) (smallBitmap.getWidth() * 3), (int) (smallBitmap.getHeight() * 3), true);
             }
         }
 
@@ -67,7 +68,7 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
         //getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         setLayout();
         getPlaceInfo();
-       // getPhoto();
+        // getPhoto();
     }
 
     private String getUrl(LatLng origin, LatLng dest, String directionMode) {
@@ -90,7 +91,7 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
 
         ImageView image = findViewById(R.id.archImage);
         image.setImageBitmap(markerImage);
-        if (markerImage == null){
+        if (markerImage == null) {
             Log.i("Simran", "n");
         } else {
             Log.i("Simran", "y");
@@ -123,7 +124,7 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
             new FetchURL(getParent()).execute(url, "walking");
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationMarker.getPosition(), 16));
 
-            if (tabLayout.getSelectedTabPosition() == 1){
+            if (tabLayout.getSelectedTabPosition() == 1) {
                 tabLayout.getTabAt(0).select();
             }
             finish();
@@ -142,7 +143,7 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
 
     public void getPlaceInfo() {
         // Initialize Places.
-       Places.initialize(getApplicationContext(), getString(R.string.google_directions_key));
+        Places.initialize(getApplicationContext(), getString(R.string.google_directions_key));
 
 // Create a new Places client instance.
         PlacesClient placesClient = Places.createClient(this);
@@ -168,7 +169,9 @@ public class PopUpInfoWindow extends Activity implements TaskLoadedCallback {
             Log.i(TAG, "Place found: " + place.getWebsiteUri());
             if (!(place.getWebsiteUri() == null)) {
                 TextView url = findViewById(R.id.txtLink);
-                url.setText(place.getWebsiteUri().toString());
+                url.setMovementMethod(LinkMovementMethod.getInstance());
+                String link = "<a href='" + place.getWebsiteUri().toString() + "'> Link To Website </a>";
+                url.setText(Html.fromHtml(link));
             }
             if (!(place.getRating() == null)) {
                 int rate = (int) Math.round(place.getRating());

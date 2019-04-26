@@ -14,5 +14,6 @@
     <string name="search_hint">Search Architecture here</string>
     <string name="search">&#160;Search&#160;</string>
     <string name="search_not_found">Architecture Not Found</string>
+    <string name="search_bar">Search Architecture&#8230;</string>
 
 </resources>

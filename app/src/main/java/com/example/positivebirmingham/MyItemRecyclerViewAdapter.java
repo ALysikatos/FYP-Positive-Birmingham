@@ -1,18 +1,25 @@
 package com.example.positivebirmingham;
 
+import android.content.Context;
 import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.positivebirmingham.ListFragment.OnListFragmentInteractionListener;
 
 import java.util.List;
+
+import static com.example.positivebirmingham.MapsActivity.inputManager;
+import static com.example.positivebirmingham.MapsActivity.searchBar;
 
 /**
  * Recycle viewholder holds view
@@ -67,6 +74,9 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
                     mListener.onListFragmentInteraction(holder.mItem);
+                    searchBar.setVisibility(View.GONE);
+                    searchBar.setText("");
+                    inputManager .hideSoftInputFromWindow(searchBar.getWindowToken(),0);
                 }
             }
         });

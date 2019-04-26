@@ -72,6 +72,7 @@ public class Architecture extends Activity {
                 counter++;
             }
         Collections.sort(ITEMS, (o1, o2) -> o1.getArchitectureDistance().compareTo(o2.getArchitectureDistance()));
+        Collections.sort(ITEMS, (o1, o2) -> o1.getArchitectureDuration().compareTo(o2.getArchitectureDuration()));
         }
 
     /**
@@ -86,6 +87,20 @@ public class Architecture extends Activity {
 
         public Float getArchitectureDistance() {
             return architectureDistance;
+        }
+
+        public Integer getArchitectureDuration() {
+            architectureDuration.trim();
+            Log.i("josep", String.valueOf(architectureDuration.length()));
+            if (architectureDuration.length() == 5 ||architectureDuration.length() == 6){
+                //Log.i("josep", String.valueOf(Integer.parseInt(architectureDuration.substring(0,1).trim())));
+                return Integer.parseInt(architectureDuration.substring(0,1).trim());
+            }
+            if (architectureDuration.length() == 7) {
+                Log.i("josephhh", String.valueOf(Integer.parseInt(architectureDuration.substring(0,2).trim())));
+                return Integer.parseInt(architectureDuration.substring(0,2).trim());
+            }else
+                return 100;
         }
 
         public ArchitectureItem(String architectureTitle, Float architectureDistance, String

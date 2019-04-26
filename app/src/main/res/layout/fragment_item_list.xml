@@ -11,4 +11,10 @@
     app:layoutManager="LinearLayoutManager"
     tools:context=".ListFragment"
     tools:listitem="@layout/fragment_item"
-    android:background="#E8E8E8"/>
+    android:background="#E8E8E8"
+    android:scrollbars="vertical"
+    android:scrollbarStyle="insideOverlay"
+    android:scrollbarSize="5dp"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
+    />

@@ -2,6 +2,7 @@ package com.example.positivebirmingham;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -28,6 +30,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -93,7 +99,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final String LIST_FRAGMENT_TAG = "list_fragment_tag";
     private final String SUPPORT_FRAGMENT_TAG = "support_fragment_tag";
     private final String KEY_TAB_INDEX = "tab_index";
-    private static final String KEY_MARKERS_ARRAYLIST ="markers_arraylist";
+    private static final String KEY_MARKERS_ARRAYLIST = "markers_arraylist";
 
 
     // The geographical location where the device is currently located. That is, the last-known
@@ -111,7 +117,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static HashMap<String, String> architectureDateHashmap = new HashMap<>();
     public static HashMap<String, String> architectureInfoHashmap = new HashMap<>();
     public static HashMap<String, String> architectureStyleHashmap = new HashMap<>();
-    public static HashMap<String, String> architectHashmap= new HashMap<>();
+    public static HashMap<String, String> architectHashmap = new HashMap<>();
 
     private int progress = 0;
     public static ProgressBar progressBar;
@@ -120,6 +126,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static Dialog mOverlayDialog;
     public static AlertDialog overlay;
     public static Dialog progressBarDialog;
+    public static InputMethodManager inputManager;
+
+    public static AutoCompleteTextView searchBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,19 +150,95 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             supportMapFragment.setRetainInstance(true);
         }
         if (listFragment == null) {
-        // only create fragment if they haven't been instantiated already
-        listFragment = new ListFragment();
-        listFragment.setRetainInstance(true);
+            // only create fragment if they haven't been instantiated already
+            listFragment = new ListFragment();
+            listFragment.setRetainInstance(true);
         }
 
         setContentView(R.layout.main_activity);
+        searchBar = findViewById(R.id.searchbar);
+        inputManager  = (InputMethodManager) MapsActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
         Button searchButton = this.findViewById(R.id.search_button);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onSearchRequested();
+                //onSearchRequested();
+                searchBar.setVisibility(View.VISIBLE);
+                searchBar.requestFocus();
+                inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                String[] architectureNames = new String[markersList.size()];
+
+                int counter = 0;
+                for (Marker m : markersList) {
+                    architectureNames[counter] = m.getTitle();
+                    counter++;
+                }
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(MapsActivity.this, R.layout.search_text, architectureNames);
+                searchBar.setAdapter(adapter);
+
+                String input = searchBar.getText().toString();
+                popup(input);
+                searchBar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View arg1, int pos,
+                                            long id) {
+                        String input = searchBar.getText().toString();
+                        searchBar.setText("");
+                        for (Marker m : markersList) {
+                            if (m.getTitle().toUpperCase().equals(input.toUpperCase())) {
+
+                                Intent intent = new Intent(MapsActivity.this, PopUpInfoWindow.class);
+
+                                Bundle bundle = new Bundle();
+                                bundle.putString("MARKER", m.toString());
+                                bundle.putSerializable("MARKER_TITLE", m.getTitle());
+                                bundle.putParcelable("MARKER_LATLNG", m.getPosition());
+                                bundle.putParcelable("CURRENT_LATLNG", currentPosition);
+                                bundle.putString("MARKER_PLACEID", String.valueOf(m.getTag()));
+                                MapsActivity.destinationMarker = m;
+
+                                intent.putExtras(bundle);
+                                startActivity(intent);
+                                searchBar.setVisibility(View.GONE);
+                                return;
+                            }
+                        }
+                    }
+                });
+                searchBar.setOnDismissListener(new AutoCompleteTextView.OnDismissListener() {
+
+                    @Override
+                    public void onDismiss() {
+                        searchBar.setVisibility(View.GONE);
+                        searchBar.setText("");
+                       // inputManager  = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputManager .hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+                        searchBar.clearFocus();
+                    }
+                });
+//                searchBar.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//                    @Override
+//                    public void onFocusChange(View v, boolean hasFocus) {
+//                        if (!hasFocus) {
+//                        Log.i("Jessiej", "tg");
+//                            searchBar.clearFocus();
+//                        inputManager  = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        inputManager .hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+//                        searchBar.setVisibility(View.GONE);
+//                        searchBar.setText("");
+//                        // If it loses focus...
+////                        if (!hasFocus) {
+////                            // Hide soft keyboard.
+////                            inputManager  = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+////                            inputManager .hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+//                        }
+//                    }
+//                });
             }
         });
+
 
 //        getSupportActionBar().hide();
 //        Toolbar myToolbar = findViewById(R.id.my_toolbar);
@@ -169,11 +254,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // related to the map
         //  mapFragment.getMapAsync(this);
 
-    //    supportMapFragment = new SupportMapFragment();
+        //    supportMapFragment = new SupportMapFragment();
 //        if (listFragment == null ){
 //        listFragment = new ListFragment();}
         getLocationPermission();
         setupTabLayout();
+    }
+
+    public void popup(String ya) {
+        Log.i("joe", ya);
     }
 
     /**
@@ -224,8 +313,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (root instanceof LinearLayout) {
             ((LinearLayout) root).setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
             GradientDrawable drawable = new GradientDrawable();
-            drawable.setColorFilter(0xffff0000, PorterDuff.Mode.MULTIPLY );
-           // drawable.setColor(getResources().getColor(R.color.colorAccent));
+            drawable.setColorFilter(0xffff0000, PorterDuff.Mode.MULTIPLY);
+            // drawable.setColor(getResources().getColor(R.color.colorAccent));
             drawable.setSize(2, 1);
             ((LinearLayout) root).setDividerPadding(10);
             ((LinearLayout) root).setDividerDrawable(drawable);
@@ -247,11 +336,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         FragmentManager fragmentManager = getSupportFragmentManager();
         android.support.v4.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.addToBackStack(null);
-        if (fragment == listFragment){
-            Log.i("imalist","y");
-        transaction.replace(R.id.fragment_content, fragment, LIST_FRAGMENT_TAG);}
-        else if (fragment == supportMapFragment) {
-            Log.i("imalist","yNU");
+        if (fragment == listFragment) {
+            Log.i("imalist", "y");
+            transaction.replace(R.id.fragment_content, fragment, LIST_FRAGMENT_TAG);
+        } else if (fragment == supportMapFragment) {
+            Log.i("imalist", "yNU");
             transaction.replace(R.id.fragment_content, fragment, SUPPORT_FRAGMENT_TAG);
         }
         transaction.commit();
@@ -324,7 +413,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else {
                     AlertDialog alertDialog = new AlertDialog.Builder(MapsActivity.this).create();
                     alertDialog.setTitle("   Location Permission Denied!");
-                    alertDialog.setMessage("\nDefault Birmingham Location Used:\n                  Aston University");
+                    alertDialog.setMessage("\nDefault Birmingham Location Used:\n          New Street Train Station");
                     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
@@ -333,10 +422,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             });
                     alertDialog.show();
 
-              //      Toast.makeText(this, "     Location Permission Denied!\nDefault Location Used - Aston University", Toast.LENGTH_LONG).show();
+                    //      Toast.makeText(this, "     Location Permission Denied!\nDefault Location Used - Aston University", Toast.LENGTH_LONG).show();
                     Location defaultLocation = new Location("LocationManager.GPS_PROVIDER");
-                    defaultLocation.setLatitude(52.486992);
-                    defaultLocation.setLongitude(-1.890255);
+                    defaultLocation.setLatitude(52.478060);
+                    defaultLocation.setLongitude(-1.898493);
                     currentLocation = defaultLocation;
                     supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_content);
                     supportMapFragment.getMapAsync(MapsActivity.this);
@@ -376,13 +465,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         addArchitectureMarkers();
         //prince();
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        //mMap.getUiSettings().setMapToolbarEnabled(False).
+        mMap.getUiSettings().setMapToolbarEnabled(false);
 
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
-//        Log.i("jack", theDistance.get(1));
-//        Log.i("jack", theDistance.get(2));
-//        Log.i("jack", theDistance.get(3));
-//        Log.i("jack", theDistance.get(4));
+            @Override
+            public void onMapClick(LatLng latLng) {
+                searchBar.setVisibility(View.GONE);
+                searchBar.setText("");
+             //   inputManager  = (InputMethodManager) MapsActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager .hideSoftInputFromWindow(searchBar.getWindowToken(),0);
+            }
+        });
         mMap.setOnMarkerClickListener(
                 new GoogleMap.OnMarkerClickListener() {
                     @Override
@@ -420,10 +514,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.i("jack", String.valueOf(theDistance.size()));
             Log.i("jack", "NULLLLNOT");
         }
-       // startProgressBar();
+        // startProgressBar();
 
-       // progressBar = findViewById(R.id.progress_bar);
-       // progressBarLayout = findViewById(R.id.activity_main);
+        // progressBar = findViewById(R.id.progress_bar);
+        // progressBarLayout = findViewById(R.id.activity_main);
 
 //        Dialog mOverlayDialog = new Dialog(this, android.R.style.Theme_Panel); //display an invisible overlay dialog to prevent user interaction and pressing back
 //        mOverlayDialog.setCancelable(false);
@@ -560,16 +654,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         List<Map.Entry<Marker, Float>> list = new LinkedList<>(distanceList.entrySet());
 
-        Collections.sort(list, new Comparator<Map.Entry<Marker, Float> >() {
+        Collections.sort(list, new Comparator<Map.Entry<Marker, Float>>() {
             public int compare(Map.Entry<Marker, Float> o1,
-                               Map.Entry<Marker, Float> o2)
-            {
+                               Map.Entry<Marker, Float> o2) {
                 return (o1.getValue()).compareTo(o2.getValue());
             }
         });
-
-        Log.i("gree", String.valueOf(list.size()));
-
         Marker nearestMarker1 = list.get(0).getKey();
         Marker nearestMarker2 = list.get(1).getKey();
         Marker nearestMarker3 = list.get(2).getKey();
@@ -579,7 +669,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         builder.include(nearestMarker1.getPosition());
         builder.include(nearestMarker2.getPosition());
         builder.include(nearestMarker3.getPosition());
-     //   builder.include(nearestMarker4.getPosition());
+        //   builder.include(nearestMarker4.getPosition());
 
         builder.include(currentPosition);
 
@@ -620,8 +710,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 String architect = architecture[5];
 
                 Log.i("princess", architecture[0] + architecture[2]);
-
-
 
 
                 // Initialize Places.
@@ -695,7 +783,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             String url = getUrl(currentPosition, marker.getPosition(), "walking");
                             new FetchURL(MapsActivity.this).execute(url, "walking");
                             markersList.add(marker);
-                            if (bitmap == null){
+                            if (bitmap == null) {
                                 Log.i("Simran", "nay");
                             }
                             markerHashmap.put(marker.getTitle(), bitmap);
@@ -704,7 +792,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             architectureStyleHashmap.put(marker.getTitle(), architectureStyle);
                             architectHashmap.put(marker.getTitle(), architect);
                             Log.i("Simran", bitmap.toString());
-                            if (markersList.size() ==34){
+                            if (markersList.size() == 34) {
                                 setCameraPosition(mMap, markersList);
                             }
                         }).addOnFailureListener((exception) -> {
@@ -791,7 +879,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onListFragmentInteraction(Architecture.ArchitectureItem item) {
         Log.i("steg", "3");
         for (Marker m : markersList) {
-            Log.i("steg", "2 "+m.getTitle());
+            Log.i("steg", "2 " + m.getTitle());
             Log.i("steghaha", String.valueOf(markersList.size()));
             if (m.getTitle().equals(item.architectureTitle)) {
 
