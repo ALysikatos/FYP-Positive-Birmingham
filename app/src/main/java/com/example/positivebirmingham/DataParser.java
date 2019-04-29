@@ -10,6 +10,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Class to parse Google Maps Directions API data to get route
+ * Courtesy : https://github.com/Vysh01/android-maps-directions/blob/master/app/src/main/java/com/thecodecity/mapsdirection/directionhelpers/DataParser.java
+ * Added customization - lines 38 - 54
+ */
 public class DataParser {
 
     public List<List<HashMap<String, String>>> parse(JSONObject jObject) {
@@ -35,13 +40,13 @@ public class DataParser {
                     HashMap<String, String> hmDistance = new HashMap<String, String>();
                     hmDistance.put("distance", jDistance.getString("text"));
 
+                    /** Adding distance object to the path */
+                    path.add(hmDistance);
+
                     /** Getting duration from the json data */
                     jDuration = ((JSONObject) jLegs.get(j)).getJSONObject("duration");
                     HashMap<String, String> hmDuration = new HashMap<String, String>();
                     hmDuration.put("duration", jDuration.getString("text"));
-
-                    /** Adding distance object to the path */
-                    path.add(hmDistance);
 
                     /** Adding duration object to the path */
                     path.add(hmDuration);

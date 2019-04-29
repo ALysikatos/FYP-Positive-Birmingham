@@ -2,7 +2,10 @@ package com.example.positivebirmingham;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,10 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.positivebirmingham.dummy.DummyContent;
-import com.example.positivebirmingham.dummy.DummyContent.DummyItem;
-
-import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -23,11 +22,13 @@ import java.util.List;
  */
 public class ListFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+
+    private static final String KEY_RECYCLER_STATE = "recycler_state";
+    private RecyclerView recyclerView;
+    private Parcelable recyclerViewState;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -36,7 +37,6 @@ public class ListFragment extends Fragment {
     public ListFragment() {
     }
 
-    // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
     public static ListFragment newInstance(int columnCount) {
         ListFragment fragment = new ListFragment();
@@ -56,24 +56,47 @@ public class ListFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // Save list state for if phone orientation changed
+        recyclerViewState = recyclerView.getLayoutManager().onSaveInstanceState();
+        outState.putParcelable(KEY_RECYCLER_STATE, recyclerViewState);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+        if (savedInstanceState != null) {
+            recyclerViewState = savedInstanceState.getParcelable(KEY_RECYCLER_STATE);
+            recyclerView.getLayoutManager().onRestoreInstanceState(recyclerViewState);
+            if (recyclerView != null) {
             }
-            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView = (RecyclerView) view;
+            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(Architecture.ARCHITECTURE_ITEMS, mListener));
+        } else {
+            // Set the adapter
+            if (view instanceof RecyclerView) {
+                Context context = view.getContext();
+                recyclerView = (RecyclerView) view;
+
+                //Add divider between items in the list view
+                DividerItemDecoration itemDecorator = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
+                itemDecorator.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider));
+                recyclerView.addItemDecoration(itemDecorator);
+
+                if (mColumnCount <= 1) {
+                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                } else {
+                    recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+                }
+                recyclerView.setAdapter(new MyItemRecyclerViewAdapter(Architecture.ARCHITECTURE_ITEMS, mListener));
+            }
         }
         return view;
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -97,13 +120,8 @@ public class ListFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(Architecture.ArchitectureItem item);
     }
 }

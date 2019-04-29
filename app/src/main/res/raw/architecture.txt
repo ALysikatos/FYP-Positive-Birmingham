@@ -1,6 +1,35 @@
-52.480111,-1.905656,Birmingham Museum & Art Gallery,ChIJo0dMkYy8cEgRRJR-gJ-142Y
-52.4811907,-1.8989312,St. Philip's Cathedral,ChIJyZhgKIy8cEgRb68F_0J9zwQ
-52.4835549,-1.8934132,Birmingham Magistrates' Court,ChIJ9Tph9Y-8cEgR_xGrGNA_ZTA
-52.4818738,-1.8971905,Great Western Arcade,ChIJDZiQ9468cEgR1XmYBKwQ5vI
-52.4749434,-1.9090747,The Cube,ChIJp194avW8cEgRvtk7kA6R890
-52.4797411,-1.9106777,Library of Birmingham,ChIJzbhBevO8cEgRsizctkhHvG0
+Birmingham Museum & Art Gallery;ChIJo0dMkYy8cEgRRJR-gJ-142Y;1885;Birmingham Museum and Art Gallery is housed in a Grade II* listed city centre landmark building.;Victorian Baroque & Edwardian Rennaissance;Yeoville Thomason
+St. Philip's Cathedral;ChIJyZhgKIy8cEgRb68F_0J9zwQ;1715;St Philip's is Grade 1 listed and one of the oldest buildings in the city still used for its original purpose.;Elegant English Baroque;Thomas Archer
+Victoria Law Courts;ChIJ9Tph9Y-8cEgR_xGrGNA_ZTA;1891;The Victoria Law Courts is a Grade I listed red brick and terracotta building that now houses Birmingham Magistrates' Court.;Victorian;Aston Webb & Ingress Bell
+Great Western Arcade;ChIJDZiQ9468cEgR1XmYBKwQ5vI;1876;The Great Western Arcade is a covered Grade II listed Victorian shopping arcade.;Victorian;William H Ward
+The Cube;ChIJVVWVQfW8cEgR-QD0IhVeaoQ;2010;The Cube is one of Birmingham's landmark buildings inspired by it’s industrial heritage with amenities inside.;Contemporary;Ken Shuttleworth
+Library of Birmingham;ChIJzbhBevO8cEgRsizctkhHvG0;2013;Birmingham's public library has been described as the largest public library in the UK and won Architects' Journal Building of the Year 2013.;Postmodern & High-Tech;Francine Houben
+Millennium Point Car Park;ChIJjfxbOYO8cEgR1uIwBHlCCgc;2012;The Millennium Point Multi-storey Car Park was selected as the winner of the 2012 Best New Car Park in the UK.;Contemporary;Urban Design
+Victoria Square;ChIJyztffIu8cEgRe_pT2JyNjYc;early 1800's;Victoria Square is a pedestrianised public square home to both the Town Hall and the Council House.;Victorian;-
+Hyatt Regency Birmingham;ChIJEUfiZvS8cEgRzU-BF4xMHkQ;1990;A hotel in the city centre which stands at a height of 75 metres with a blue glass exterior facade.;Modern;RHWL
+Millennium Point;ChIJUcPMcYO8cEgRRii8TU3Z5Po;2001;A multi-use complex which was the largest landmark millennium project in England, outside of London.;Modern;Nicholas Grimshaw
+Birmingham City Council House;ChIJJSybZoy8cEgRxFZ5Mb4LqWs;1879; A Grade II* listed building home to Birmingham City Council and one of the largest buildings in the city.;Classical;Yeoville Thomason
+Birmingham Moor Street;ChIJTYhrqBi9cEgRPmMp9Ucvqx0;1909;Birmingham Moor Street is a Grade II listed building and one of three main railway stations in the city centre of Birmingham.;Victorian;-
+Birmingham Methodist Central Hall;ChIJf81ItWS9cEgRgxxhvMP1RCo;1904;A three-storey red brick and terracotta Grade II* listed building with a distinctive tower.;Victorian;Ewan Harper & James A. Harper
+Blakesley Hall Museum;ChIJteBbIl-6cEgRXhZ6W9nTXCE;1590;A grade II* listed building which was a Tudor hall and is now a museum. One of the oldest buildings in Birmingham.;Tudor;-
+Aston Hall;ChIJHxQRd6i8cEgRyJzQLl3B10g;1618-1635;Aston Hall is a Grade I listed Jacobean prodigy house, which is now a community museum.;Jacobean;John Thorpe
+Perrott's Folly;ChIJgTmAGgC9cEgR1apbl6JUfBQ;1758;A Grade II* listed 29-metre tall tower in the Edgbaston area. Also known as The Monument, or The Observatory,;Georgian;John Perrott
+Birmingham Town Hall;ChIJk-zSjIy8cEgRVbVFIwduMTc;1834;A Grade I listed concert hall and venue for popular assemblies.;Classical & Roman;Joseph Hansom & Edward Welch
+Selly Manor;ChIJq6p_owfHJIgRC0rlSaA7flc;14th century or before;A Grade II listed 14th-century manor house dating back to at least 1327.;Tudor;William Alexander Harvey
+The Old Crown;ChIJfa0_eoC8cEgR-aHYI6Nfidc;1450-1500;The oldest extant secular building in Birmingham. Grade II* listed, and claims to date back to c. 1368.;Tudor;-
+Birmingham Back to Back;ChIJ4TKseGK8cEgREn_MweEXxyA;1840;The City's last surviving court of back-to-back houses, Grade II listed.;19th Century;-
+Hall of Memory;ChIJP0P5XvO8cEgRSLUuI7iOBxE;1925;Grade I listed war memorial to commemorate the 12,320 Birmingham citizens who died in World War I.;Art Deco;S. N. Cooke and W. N. Twist
+Sarehole Mill Museum;ChIJGRXhqOG7cEgRgwrYVuFTv8g;1542;Grade II listed water mill now run as a museum. One of only two working water mills in Birmingham.;Tudor;-
+Highbury Hall;ChIJWeXK9Re8cEgRAJbVRSCeGbA;1879;Grade II* listed building with lots of terracotta decoration.;Venetian Gothic;J. H. Chamberlain
+Royal Birmingham Conservatoire;ChIJ3YJ_VYu8cEgRQaSXhi5I4gs;2017;The Royal Birmingham Conservatoire is a music school, drama school and concert venue.;Modern;Feilden Clegg Bradley
+Rotunda;ChIJawZj4oi8cEgRmlMwGJqo81A;1965;Grade II listed cylindrical highrise building, standing at 81 metres tall.;Modern;Jim Roberts
+Grand Central;ChIJTaMcWIm8cEgR4vbQGVg7RvM;2015;Shopping centre located above New Street railway station.;Modern;Haskoll
+Chamberlain Clock;ChIJuUKLf-68cEgR7LAG-obNvds;1903;An Edwardian, cast-iron, clock tower in the Jewellery Quarter of Birmingham.;Edwardian;-
+St. Paul's Church;ChIJdyVTSu28cEgRJuHktarb3hI;1779;Grade I listed Church of England church in St Paul's Square in the Jewellery Quarter.;Georgian;Roger Eykyns
+Saint Martin in the Bull Ring;ChIJGbeOjoi8cEgR1k7FRwPEt9o;1855;Grade II* listed original parish church of Birmingham.;Neo-Gothic;J. A. Chatwin
+The International Convention Centre;ChIJk-zSjIy8cEgRb6g3gjSAOOo;1991;Major conference venue and holds the Symphony Hall.;Modern;Percy Thomas
+Symphony Hall;ChIJk-zSjIy8cEgRJZqgu9tLQKI;1991;A 2,262 seat concert venue, with interior modelled on the Musikverein in Vienna and the Concertgebouw in Amsterdam.;Modern;Percy Thomas
+Mailbox Birmingham;ChIJnZVz2oq8cEgRGd4Tz3taGKc;2000;Upmarket shopping and office development.;Modern;Associated Architects
+The Old Joint Stock Pub & Theatre;ChIJtX9rIYy8cEgRqSOlmsDfv74;1864;Grade II listed theatre and pub built as a library.;Classical;J. A. Chatwin
+Birmingham School of Art;ChIJ1Qca8Yy8cEgRVa3PzYxXILM;1843;Grade I listed municipal art school.;Victorian Gothic & Venetian;J. H. Chamberlain
+Bullring;ChIJgTmisIi8cEgRUGnpwrypSC8;2003;Birmingham's major shopping centre.;Contemporary;Benoy
