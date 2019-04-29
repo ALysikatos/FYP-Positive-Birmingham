@@ -1,12 +1,8 @@
 package com.example.positivebirmingham;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.LinearLayout;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -18,28 +14,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.example.positivebirmingham.MapsActivity.mOverlayDialog;
-import static com.example.positivebirmingham.MapsActivity.overlay;
-import static com.example.positivebirmingham.MapsActivity.progressBar;
-import static com.example.positivebirmingham.MapsActivity.progressBarDialog;
-import static com.example.positivebirmingham.MapsActivity.progressBarLayout;
-import static com.example.positivebirmingham.MapsActivity.progressBarText;
+import static com.example.positivebirmingham.MapsActivity.loadingDialog;
 
+/**
+ * AsyncTask to parse JSON data and draw the route on the map using polylines
+ * Courtesy : https://github.com/Vysh01/android-maps-directions/blob/master/app/src/main/java/com/thecodecity/mapsdirection/directionhelpers/PointsParser.java
+ * Customized method
+ */
 public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
 
-    public static ArrayList<Float> distanceList = new ArrayList<>();
-    public static ArrayList<String> durationList = new ArrayList<>();
-    TaskLoadedCallback taskCallback;
-    String directionMode = "walking";
-    private static int x =0;
+    static ArrayList<Float> distanceList = new ArrayList<>();
+    static ArrayList<String> durationList = new ArrayList<>();
+    private String directionMode;
+    private static int x = 0;
     private Double miles;
 
-    public PointsParser(Context mContext, String directionMode) {
-        this.taskCallback = (TaskLoadedCallback) mContext;
+    public PointsParser(String directionMode) {
         this.directionMode = directionMode;
     }
 
-    // Parsing the data in non-ui thread
+    // Parsing the data in non-ui thread/background thread
     @Override
     protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
 
@@ -81,16 +75,14 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
             // Fetching all the points in i-th route
             for (int j = 0; j < path.size(); j++) {
                 HashMap<String, String> point = path.get(j);
-
-                if (j == 0) {    // Get distance from the list
+                // Get distance from the list
+                if (j == 0) {
                     distance = (String) point.get("distance");
                     continue;
                 } else if (j == 1) { // Get duration from the list
                     duration = (String) point.get("duration");
                     continue;
                 }
-//                    Log.i("distance", distance);
-//                    Log.i("mylog", duration);
 
                 double lat = Double.parseDouble(point.get("lat"));
                 double lng = Double.parseDouble(point.get("lng"));
@@ -101,7 +93,7 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
             lineOptions.addAll(points);
             if (directionMode.equalsIgnoreCase("walking")) {
                 lineOptions.width(10);
-                lineOptions.color(Color.BLUE);
+                lineOptions.color(Color.RED);
             } else {
                 lineOptions.width(20);
                 lineOptions.color(Color.BLUE);
@@ -112,34 +104,28 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
         // Drawing polyline in the Google Map for the i-th route
         if (lineOptions != null) {
             x++;
-            Log.i("nemo", "x is " + x);
-            Float distanceInMiles = Float.parseFloat(distance.substring(0,3));
-            Log.i("nemo", "di" + distance);
-            miles =  distanceInMiles.doubleValue() * 0.62137;
-            Log.i("nemo", String.valueOf(miles));
+            //convert distance into miles
+            Float distanceInMiles = Float.parseFloat(distance.substring(0, 3));
+            miles = distanceInMiles.doubleValue() * 0.62137;
             DecimalFormat df = new DecimalFormat("0.0");
             miles = Double.valueOf(df.format(miles));
-            if (x<=35) {
-              //  distance = distance.substring(0,3);
-
+            if (x <= 35) {
+                //add all architecture distances and durations into arraylists
                 distanceList.add(miles.floatValue());
                 durationList.add(duration);
-                if (x==35) {
-                     overlay.dismiss();
+                if (x == 35) {
+                    loadingDialog.dismiss();
                 }
                 return;
             }
-    //            taskCallback.onTaskDone(lineOptions,distance,duration);
-           // taskCallback.onTaskDone(distance);
-           // MapsActivity.theDistance.add(distance);
-            //Log.i("tipsy", String.valueOf(MapsActivity.theDistance.size()));
-
             if (MapsActivity.currentPolyline != null)
                 MapsActivity.currentPolyline.remove();
+            //draw route on map
             MapsActivity.currentPolyline = MapsActivity.mMap.addPolyline(lineOptions);
 
             String theSnippet = "Distance: " + miles + " miles, " + duration + " walk";
             if (MapsActivity.destinationMarker != null) {
+                //open destination marker info window displaying distance and duration away from current location
                 MapsActivity.destinationMarker.setSnippet(theSnippet);
                 MapsActivity.destinationMarker.showInfoWindow();
             }

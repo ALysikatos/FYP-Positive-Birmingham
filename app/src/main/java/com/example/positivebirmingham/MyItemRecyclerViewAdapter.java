@@ -1,16 +1,10 @@
 package com.example.positivebirmingham;
 
-import android.content.Context;
-import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,24 +16,21 @@ import static com.example.positivebirmingham.MapsActivity.inputManager;
 import static com.example.positivebirmingham.MapsActivity.searchBar;
 
 /**
- * Recycle viewholder holds view
- * adapter binds data to the view
+ * Adapter binds data to the list view
  * {@link RecyclerView.Adapter} that can display a and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
  */
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
 
     private final List<Architecture.ArchitectureItem> mValues;
     private final OnListFragmentInteractionListener mListener;
-    public int counter = 0;
 
     public MyItemRecyclerViewAdapter(List<Architecture.ArchitectureItem> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
 
-    //viewholder == ui elements
+    //Viewholder holds the view - ui elements
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
@@ -47,25 +38,22 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         return new ViewHolder(view);
     }
 
-    //binds data to ui elements
+    //Binds data to ui elements
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(String.valueOf(position+1));
+        holder.mIdView.setText(String.valueOf(position + 1));
+        holder.mTitleView.setText(mValues.get(position).architectureTitle);
 
-        if (Architecture.getITEMS() == null) {
-            Log.i("null", "null");
-        } else {
-            Log.i("notnull", "notnull");
-        }
-       holder.mTitleView.setText(mValues.get(position).architectureTitle);
-
-        holder.mDistanceView.setText(String.valueOf(mValues.get(position).architectureDistance) + " miles away");
+        String distance = mValues.get(position).architectureDistance + " miles away";
+        holder.mDistanceView.setText(distance);
         holder.mImageView.getLayoutParams().height = 300;
         holder.mImageView.getLayoutParams().width = 300;
         holder.mImageView.setImageBitmap(mValues.get(position).architectureImage);
-        holder.mDurationView.setText(mValues.get(position).architectureDuration + " walk");
-        holder.mSnippetView.setText(Html.fromHtml("<b>Architectural Style:</b> <br />" +mValues.get(position).architectureSnippet));
+        
+        String duration = mValues.get(position).architectureDuration + " walk";
+        holder.mDurationView.setText(duration);
+        holder.mSnippetView.setText(Html.fromHtml("<b>Architectural Style:</b> <br />" + mValues.get(position).architectureSnippet));
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,16 +62,16 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
                     mListener.onListFragmentInteraction(holder.mItem);
+                    //hide searchbar and keyboard if open to view pop-up
                     searchBar.setVisibility(View.GONE);
                     searchBar.setText("");
-                    inputManager .hideSoftInputFromWindow(searchBar.getWindowToken(),0);
+                    inputManager.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
                 }
             }
         });
     }
 
     //size of list
-
     @Override
     public int getItemCount() {
         return mValues.size();
