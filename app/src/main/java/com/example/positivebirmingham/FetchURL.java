@@ -14,6 +14,7 @@ import java.net.URL;
 /**
  * AsyncTask to fetch and download the JSON data from the Google Direction API service
  * Courtesy : https://github.com/Vysh01/android-maps-directions/blob/master/app/src/main/java/com/thecodecity/mapsdirection/directionhelpers/FetchURL.java
+ * Shrestha, V. (2018). Android-maps-directions [online]. [Accessed 30 March 2019].
  */
 public class FetchURL extends AsyncTask<String, Void, String> {
 

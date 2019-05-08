@@ -132,14 +132,8 @@
                 android:textColor="@android:color/holo_red_dark"
                 android:textStyle="bold"
                 android:textAlignment="center"
-                android:layout_marginBottom="5dp"/>
-
-            <!--<Button-->
-            <!--android:id="@+id/close_popup"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center"-->
-            <!--android:text="Close"/>-->
+                android:layout_marginBottom="5dp"
+                android:padding="10dp"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

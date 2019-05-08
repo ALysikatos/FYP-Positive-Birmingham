@@ -482,7 +482,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             photoMetadata = place.getPhotoMetadatas().get(1);
                         }
                         if (place.getName().equals("Birmingham Museum & Art Gallery")) {
-                            photoMetadata = place.getPhotoMetadatas().get(2);
+                            photoMetadata = place.getPhotoMetadatas().get(1);
                         }
                         // Create a FetchPhotoRequest.
                         FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
@@ -498,7 +498,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Canvas canvas = new Canvas(bitmapWithBorder);
                             canvas.drawColor(Color.rgb(255, 128, 128));
                             canvas.drawBitmap(bitmap, 6, 6, null);
-                            //Addd marker onto map
+                            //Add marker onto map
                             Marker marker = mMap.addMarker(new MarkerOptions()
                                     .position(new LatLng(latlng.latitude, latlng.longitude))
                                     .title(architectureName)
@@ -544,11 +544,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     //Fetch URL from Google Directions API web service to get route path
-    private String getUrl(LatLng origin, LatLng dest, String directionMode) {
+    private String getUrl(LatLng origin, LatLng destination, String directionMode) {
         // Origin of route
         String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
         // Destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+        String str_dest = "destination=" + destination.latitude + "," + destination.longitude;
         // Mode of transport
         String mode = "mode=" + directionMode;
         // Building the parameters to the web service
