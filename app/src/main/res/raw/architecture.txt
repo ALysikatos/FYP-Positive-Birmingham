@@ -10,7 +10,7 @@ Hyatt Regency Birmingham;ChIJEUfiZvS8cEgRzU-BF4xMHkQ;1990;A hotel in the city ce
 Millennium Point;ChIJUcPMcYO8cEgRRii8TU3Z5Po;2001;A multi-use complex which was the largest landmark millennium project in England, outside of London.;Modern;Nicholas Grimshaw
 Birmingham City Council House;ChIJJSybZoy8cEgRxFZ5Mb4LqWs;1879; A Grade II* listed building home to Birmingham City Council and one of the largest buildings in the city.;Classical;Yeoville Thomason
 Birmingham Moor Street;ChIJTYhrqBi9cEgRPmMp9Ucvqx0;1909;Birmingham Moor Street is a Grade II listed building and one of three main railway stations in the city centre of Birmingham.;Victorian;-
-Birmingham Methodist Central Hall;ChIJf81ItWS9cEgRgxxhvMP1RCo;1904;A three-storey red brick and terracotta Grade II* listed building with a distinctive tower.;Victorian;Ewan Harper & James A. Harper
+Birmingham Methodist Central Hall;ChIJe-IVQ4W8cEgRLuCuClOjQMc;1904;A three-storey red brick and terracotta Grade II* listed building with a distinctive tower.;Victorian;Ewan Harper & James A. Harper
 Blakesley Hall Museum;ChIJteBbIl-6cEgRXhZ6W9nTXCE;1590;A grade II* listed building which was a Tudor hall and is now a museum. One of the oldest buildings in Birmingham.;Tudor;-
 Aston Hall;ChIJHxQRd6i8cEgRyJzQLl3B10g;1618-1635;Aston Hall is a Grade I listed Jacobean prodigy house, which is now a community museum.;Jacobean;John Thorpe
 Perrott's Folly;ChIJgTmAGgC9cEgR1apbl6JUfBQ;1758;A Grade II* listed 29-metre tall tower in the Edgbaston area. Also known as The Monument, or The Observatory,;Georgian;John Perrott
@@ -22,7 +22,7 @@ Hall of Memory;ChIJP0P5XvO8cEgRSLUuI7iOBxE;1925;Grade I listed war memorial to c
 Sarehole Mill Museum;ChIJGRXhqOG7cEgRgwrYVuFTv8g;1542;Grade II listed water mill now run as a museum. One of only two working water mills in Birmingham.;Tudor;-
 Highbury Hall;ChIJWeXK9Re8cEgRAJbVRSCeGbA;1879;Grade II* listed building with lots of terracotta decoration.;Venetian Gothic;J. H. Chamberlain
 Royal Birmingham Conservatoire;ChIJ3YJ_VYu8cEgRQaSXhi5I4gs;2017;The Royal Birmingham Conservatoire is a music school, drama school and concert venue.;Modern;Feilden Clegg Bradley
-Rotunda;ChIJawZj4oi8cEgRmlMwGJqo81A;1965;Grade II listed cylindrical highrise building, standing at 81 metres tall.;Modern;Jim Roberts
+Rotunda;ChIJ_3xXsFK9cEgRhUonFfibqQw;1965;Grade II listed cylindrical highrise building, standing at 81 metres tall.;Modern;Jim Roberts
 Grand Central;ChIJTaMcWIm8cEgR4vbQGVg7RvM;2015;Shopping centre located above New Street railway station.;Modern;Haskoll
 Chamberlain Clock;ChIJuUKLf-68cEgR7LAG-obNvds;1903;An Edwardian, cast-iron, clock tower in the Jewellery Quarter of Birmingham.;Edwardian;-
 St. Paul's Church;ChIJdyVTSu28cEgRJuHktarb3hI;1779;Grade I listed Church of England church in St Paul's Square in the Jewellery Quarter.;Georgian;Roger Eykyns

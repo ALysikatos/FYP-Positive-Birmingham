@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.example.positivebirmingham.MapsActivity.architectHashmap;
 import static com.example.positivebirmingham.MapsActivity.loadingDialog;
 
 /**
@@ -110,11 +111,13 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
             miles = distanceInMiles.doubleValue() * 0.62137;
             DecimalFormat df = new DecimalFormat("0.0");
             miles = Double.valueOf(df.format(miles));
-            if (x <= 35) {
+            if (x <= architectHashmap.size()) {
+                Log.d("tag", Integer.toString(x));
+                Log.d("tag", Integer.toString(architectHashmap.size()));
                 //add all architecture distances and durations into arraylists
                 distanceList.add(miles.floatValue());
                 durationList.add(duration);
-                if (x == 35) {
+                if (x == architectHashmap.size()) {
                     loadingDialog.dismiss();
                 }
                 return;
