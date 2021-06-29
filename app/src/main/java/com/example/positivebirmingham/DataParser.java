@@ -13,6 +13,7 @@ import java.util.List;
 /**
  * Class to parse Google Maps Directions API data to get route
  * Courtesy : https://github.com/Vysh01/android-maps-directions/blob/master/app/src/main/java/com/thecodecity/mapsdirection/directionhelpers/DataParser.java
+ * Shrestha, V. (2018). Android-maps-directions [online]. [Accessed 30 March 2019].
  * Added customization - lines 38 - 54
  */
 public class DataParser {
@@ -82,6 +83,7 @@ public class DataParser {
     /**
      * Method to decode polyline points
      * Courtesy : https://jeffreysambells.com/2010/05/27/decoding-polylines-from-google-maps-direction-api-with-java
+     * Sambells, J. (2010). Decoding Polylines from Google Maps Directions API with Java [online].
      */
     private List<LatLng> decodePoly(String encoded) {
 

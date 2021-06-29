@@ -19,6 +19,7 @@ import static com.example.positivebirmingham.MapsActivity.loadingDialog;
 /**
  * AsyncTask to parse JSON data and draw the route on the map using polylines
  * Courtesy : https://github.com/Vysh01/android-maps-directions/blob/master/app/src/main/java/com/thecodecity/mapsdirection/directionhelpers/PointsParser.java
+ * Shrestha, V. (2018). Android-maps-directions [online]. [Accessed 30 March 2019].
  * Customized method
  */
 public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
@@ -93,10 +94,10 @@ public class PointsParser extends AsyncTask<String, Integer, List<List<HashMap<S
             lineOptions.addAll(points);
             if (directionMode.equalsIgnoreCase("walking")) {
                 lineOptions.width(10);
-                lineOptions.color(Color.RED);
+                lineOptions.color(Color.BLUE);
             } else {
                 lineOptions.width(20);
-                lineOptions.color(Color.BLUE);
+                lineOptions.color(Color.RED);
             }
             Log.d("mylog", "onPostExecute lineoptions decoded");
         }
