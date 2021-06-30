@@ -10,7 +10,7 @@ Hyatt Regency Birmingham,ChIJEUfiZvS8cEgRzU-BF4xMHkQ
 Millennium Point,ChIJUcPMcYO8cEgRRii8TU3Z5Po
 Birmingham City Council,ChIJJSybZoy8cEgRxFZ5Mb4LqWs
 Birmingham Moor Street,ChIJTYhrqBi9cEgRPmMp9Ucvqx0
-Birmingham Methodist Central Hall,ChIJf81ItWS9cEgRgxxhvMP1RCo
+Birmingham Methodist Central Hall,ChIJe-IVQ4W8cEgRLuCuClOjQMc
 Blakesley Hall Museum,ChIJteBbIl-6cEgRXhZ6W9nTXCE
 Aston Hall,ChIJHxQRd6i8cEgRyJzQLl3B10g
 Perrott's Folly,ChIJgTmAGgC9cEgR1apbl6JUfBQ
@@ -22,7 +22,7 @@ Hall of Memory,ChIJP0P5XvO8cEgRSLUuI7iOBxE
 Sarehole Mill Museum,ChIJGRXhqOG7cEgRgwrYVuFTv8g
 Highbury Hall,ChIJWeXK9Re8cEgRAJbVRSCeGbA
 Royal Birmingham Conservatoire,ChIJ3YJ_VYu8cEgRQaSXhi5I4gs
-Rotunda,ChIJawZj4oi8cEgRmlMwGJqo81A
+Rotunda,ChIJ_3xXsFK9cEgRhUonFfibqQw
 Grand Central,ChIJTaMcWIm8cEgR4vbQGVg7RvM
 Chamberlain Clock,ChIJuUKLf-68cEgR7LAG-obNvds
 St. Paul's Church,ChIJdyVTSu28cEgRJuHktarb3hI

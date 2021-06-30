@@ -377,6 +377,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMyLocationEnabled(true);
     }
 
+
     /**
      * Moves camera position on map at start up to show current location marker
      * and the 3 nearest architecture markers.
@@ -531,7 +532,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         ApiException apiException = (ApiException) exception;
                         int statusCode = apiException.getStatusCode();
                         // Handle error with given status code.
-                        Log.e("TAG", "Place not found: " + exception.getMessage());
+                        Log.e("TAG", "Place not found: " + placeID +  exception.getMessage());
+
                     }
                 });
             }
